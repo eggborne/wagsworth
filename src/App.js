@@ -9,10 +9,8 @@ let tomatoes = require('./assets/tomatoes.jpg');
 
 setTimeout(() => {
   window.scrollTo({ top: 0 });
-}, 400)
+}, 100);
   
-  
-
 let landscape = window.innerWidth > window.innerHeight;
 
 const MainContainer = styled.div`
@@ -149,54 +147,61 @@ class App extends React.Component {
       ],
       phase: 0,
       landed: false,
-      menuOn: false
+      menuOn: false,
+      lastShifted: 0
     }
     this.touchHandler = new TouchHandler();
     this.touchHandler.setInputs();
     this.touchHandler.swipeActions.south = () => {
       if (!this.state.menuOn) {
         let newPhase = this.state.phase - 1;
-        if (newPhase < 0) {
-          return;
-        }
         this.scrollToPhase(newPhase)
-        this.setState({
-          phase: newPhase
-        })
       }
     }
     this.touchHandler.swipeActions.north = () => {
       if (!this.state.menuOn) {
         let newPhase = this.state.phase + 1;
-        if (newPhase === this.state.sections.length) {
-          return;
-        }
         this.scrollToPhase(newPhase)
-        this.setState({
-          phase: newPhase
-        });
       }
     }
   }
 
   componentDidMount = () => {
-    window.addEventListener('touchmove', (event) => {
+    window.addEventListener('touchmove', event => {
       event.preventDefault();
     }, { passive: false });
+    window.addEventListener('wheel', event => {
+      if ((window.performance.now() - this.state.lastShifted) > 500) {
+        let newPhase = event.deltaY > 0 ? this.state.phase + 1 : this.state.phase - 1;
+        this.scrollToPhase(newPhase);
+      }
+    });
+    window.addEventListener("keydown", event => {
+      if (event.code === 'ArrowDown') {
+        this.scrollToPhase(this.state.phase + 1);
+      }
+      if (event.code === 'ArrowUp') {
+        this.scrollToPhase(this.state.phase - 1);
+      }
+    });
     setTimeout(() => {
       this.setState({
         landed: true
       });
-    },100)
+    },10)
   };  
   
-  scrollToPhase = (newPhase) => {
-    console.log(this.state.sections[3]);
-    let newY = this.state.sections[newPhase].current.offsetTop - (window.innerWidth * 0.15);
-    window.scrollTo({ top: newY, behavior: 'smooth' });
-    this.setState({
-      phase: newPhase
-    })
+  scrollToPhase = (newPhase, instant) => {
+    if ((window.performance.now() - this.state.lastShifted) > 500 && newPhase >= 0 && newPhase < this.state.sections.length) {
+      let smooth = instant ? 'auto' : 'smooth';
+      console.log(this.state.sections[3]);
+      let newY = this.state.sections[newPhase].current.offsetTop - (window.innerWidth * 0.15);
+      window.scrollTo({ top: newY, behavior: smooth });
+      this.setState({
+        phase: newPhase,
+        lastShifted: window.performance.now()
+      });
+    }
   }
 
   handleHamburgerClick = (event) => {
@@ -211,7 +216,7 @@ class App extends React.Component {
     this.setState({
       menuOn: false,
     }, () => {
-      this.scrollToPhase(phase);
+      this.scrollToPhase(phase, true);
     })
   }
 

@@ -2,7 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
+// import { TouchHandler } from './control';
 import * as serviceWorker from './serviceWorker';
+require('console-green');
+
+// const touchHandler = new TouchHandler();
+// touchHandler.setInputs();
 
 ReactDOM.render(<App />, document.getElementById('root'));
 

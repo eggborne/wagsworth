@@ -1,56 +1,61 @@
 :root {
   --main-font: 'Open Sans';
   --title-font: 'Tangerine';
-  --hamburger-radius: 0.5vmin;
+  --background-color: #98b1a9;
+  --background-color-2: #b2c0dc;
   --border-radius: 1vmin;
   --header-color: #171515;
-  --background-color: #b2c0dc;
 
-  --header-height: 16vw;
+  --header-height: 15vw;
+  --footer-height: calc(var(--header-height) * 0.8);
 }
 * {
   box-sizing: border-box;
   user-select: none;
-}
-i {
-  color: black !important;
-}
-i:link {
-  text-decoration: none;
 }
 body {
   margin: 0;
   font-family: var(--main-font), sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  min-height: 200vh;
   background-color: var(--background-color);
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
 }
-.pulsing-text {
-  animation: pulse-text infinite 2s ease;
-  animation-direction: alternate;
-  margin-top: calc(var(--header-height) / 2);
-  margin-bottom: calc(var(--header-height) / 2);
+img {
+  width: 60vw;
 }
-.pulsing-text:last-of-type {
-  animation-direction: alternate-reverse;
+.fa-instagram {
+  transform: scale(1.15); 
+}
+@keyframes bob {
+  0% {
+    transform: none;
+  }
+  100% {
+    transform: translateY(12%);
+  }
 }
 @keyframes pulse-text {
   0% {
     color: #666;
-    transform: scaleX(1.1);
-    letter-spacing: initial;
-  }
-  50% {
-    letter-spacing: 100%;
   }
   100% {
     color: rgb(137, 73, 73);
-    transform: scale(1);
-    letter-spacing: initial;
   }
 }
-
+@keyframes pulse-text-wide {
+  0% {
+    color: rgb(100, 96, 111);
+  }
+  50% {
+    color: rgb(39, 61, 57);
+  }
+  100% {
+    color: rgb(86, 73, 137);
+  }
+}
 @media screen and (orientation: landscape) {
   :root {
     --header-height: 4.5rem;

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components/macro';
 import { TouchHandler } from './control';
 import Header from './Header';
+import Menu from './Menu';
 let chicken = require('./assets/largechicken.png');
 let poochie = require('./assets/poochie.png');
+let tomatoes = require('./assets/tomatoes.jpg');
 
 setTimeout(() => {
   window.scrollTo({ top: 0 });
@@ -17,7 +19,7 @@ const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: stretch;  
+  align-items: stretch;
 `;
 const MainBody = styled.div`
   position: relative;
@@ -49,7 +51,7 @@ const MainBody = styled.div`
     height: calc(${window.innerHeight}px - var(--header-height));
   }
   &:nth-of-type(5) {
-    justify-content: flex-end;
+    justify-content: space-evenly;
     background-color: var(--background-color-2);
     min-height: 0;
     height: calc(${window.innerHeight}px - var(--footer-height) - var(--header-height));
@@ -64,7 +66,7 @@ const MainBody = styled.div`
   & > .title-marquee {
     font-size: calc(var(--header-height) / 1.4);
     transform: ${props => (props.landed ? 'none' : 'translateX(-5%)')};
-    transition-delay: 800ms;
+    transition-delay: 300ms;
   }
   & > .secondary-marquee {
     animation: pulse-text-wide infinite 3s ease;
@@ -88,7 +90,7 @@ const DownArrow = styled.div`
   opacity: ${props => (props.landed ? '1' : '0')};
   animation: bob infinite 800ms linear alternate !important;
   transition: opacity 1000ms ease;
-  transition-delay: 2700ms !important;
+  transition-delay: 2700ms;
 `;
 const SocialIcons = styled.div`
   position: fixed;
@@ -128,32 +130,15 @@ const Footer = styled.footer`
     color: #ddd;
   }
 `;
+const FadeImage = styled.img`
+  opacity: ${props => (props.showing ? 1 : 0)};
+  transition: opacity 620ms ease;
+  transition-delay: 300ms;
+`;
 class App extends React.Component {
   constructor(props) {
-    super(props);
     console.log('running App');
-    this.touchHandler = new TouchHandler();
-    this.touchHandler.setInputs();
-    this.touchHandler.swipeActions.south = () => {
-      let newPhase = this.state.phase - 1;
-      if (newPhase < 0) {
-        return;
-      }
-      this.scrollToPhase(newPhase)
-      this.setState({
-        phase: newPhase
-      })
-    }
-    this.touchHandler.swipeActions.north = () => {
-      let newPhase = this.state.phase + 1;
-      if (newPhase === this.state.sections.length) {
-        return;
-      }
-      this.scrollToPhase(newPhase)
-      this.setState({
-        phase: newPhase
-      });
-    }
+    super(props);
     this.state = {
       sections:  [
         React.createRef(),
@@ -162,9 +147,48 @@ class App extends React.Component {
         React.createRef(),
         React.createRef()
       ],
-      phase: 0
+      phase: 0,
+      landed: false,
+      menuOn: false
+    }
+    this.touchHandler = new TouchHandler();
+    this.touchHandler.setInputs();
+    this.touchHandler.swipeActions.south = () => {
+      if (!this.state.menuOn) {
+        let newPhase = this.state.phase - 1;
+        if (newPhase < 0) {
+          return;
+        }
+        this.scrollToPhase(newPhase)
+        this.setState({
+          phase: newPhase
+        })
+      }
+    }
+    this.touchHandler.swipeActions.north = () => {
+      if (!this.state.menuOn) {
+        let newPhase = this.state.phase + 1;
+        if (newPhase === this.state.sections.length) {
+          return;
+        }
+        this.scrollToPhase(newPhase)
+        this.setState({
+          phase: newPhase
+        });
+      }
     }
   }
+
+  componentDidMount = () => {
+    window.addEventListener('touchmove', (event) => {
+      event.preventDefault();
+    }, { passive: false });
+    setTimeout(() => {
+      this.setState({
+        landed: true
+      });
+    },100)
+  };  
   
   scrollToPhase = (newPhase) => {
     console.log(this.state.sections[3]);
@@ -175,42 +199,69 @@ class App extends React.Component {
     })
   }
 
+  handleHamburgerClick = (event) => {
+    console.log(event);
+    this.setState({
+      menuOn: !this.state.menuOn
+    })
+  }
+
+  handleNavItemClick = (phase) => {
+    console.log('clicked for phase', phase)
+    this.setState({
+      menuOn: false,
+    }, () => {
+      this.scrollToPhase(phase);
+    })
+  }
+
+  handleTitleClick = () => {
+    this.scrollToPhase(0);
+  }
+
   render() {
-    let landed = true;
     return (
       <MainContainer>
-        <Header phase={this.state.phase} landscape={landscape} landed={landed} />
-        
-        <MainBody ref={this.state.sections[0]} landed={landed}>
+        <Header
+          onHamburgerClick={this.handleHamburgerClick}          
+          onClickTitle={this.handleTitleClick}          
+          phase={this.state.phase}
+          menuOn={this.state.menuOn}
+          landscape={landscape}
+          landed={this.state.landed}
+        />        
+        <MainBody ref={this.state.sections[0]} landed={this.state.landed}>
           {/* {!true && <PhoneNumber><a href='tel:+1-303-499-711'>503-867-5309  <i className="fa fa-phone"></i></a></PhoneNumber>} */}
           <div className='title-marquee'>gung-ho, no-foolin', double secret canine adjustment protocols</div>
           <div className='secondary-marquee'>for your bunghole</div>
-          <DownArrow landed={landed} onClick={() => { this.scrollToPhase(1) }} />
+          <DownArrow landed={this.state.landed} onTouchStart={() => { this.scrollToPhase(1) }} />
         </MainBody>
 
-        <MainBody ref={this.state.sections[1]} id='cock' landed={landed}>
-          <img src={chicken} />
+        <MainBody ref={this.state.sections[1]} id='cock' landed={this.state.phase === 1}>
+          <FadeImage showing={this.state.phase === 1} src={chicken} />
           <div className='title-marquee'>Chickens</div>
-          <DownArrow landed={landed} onClick={() => { this.scrollToPhase(2) }} />
+          <DownArrow landed={this.state.landed} onTouchStart={() => { this.scrollToPhase(2) }} />
         </MainBody>
 
-        <MainBody ref={this.state.sections[2]} landed={landed}>
-          <img src={poochie} />
+        <MainBody ref={this.state.sections[2]} landed={this.state.phase === 2}>
+          <FadeImage showing={this.state.phase === 2} src={poochie} />
           <div className='title-marquee'>Poochie</div>
-          <DownArrow landed={landed} onClick={() => { this.scrollToPhase(3) }} />
+          <DownArrow landed={this.state.landed} onTouchStart={() => { this.scrollToPhase(3) }} />
         </MainBody>
 
-        <MainBody ref={this.state.sections[3]} landed={landed}>
-          <img style={{ transform: 'scaleX(-1)' }} src={chicken} />
+        <MainBody ref={this.state.sections[3]} landed={this.state.phase === 3}>
+          <FadeImage css={{transform:'scaleX(-1)'}} showing={this.state.phase === 3} src={chicken} />
           <div className='title-marquee'>Other chickens</div>
-          <DownArrow landed={landed} onClick={() => { this.scrollToPhase(4) }} />
+          <DownArrow landed={this.state.landed} onTouchStart={() => { this.scrollToPhase(4) }} />
         </MainBody>
 
-        <MainBody ref={this.state.sections[4]} landed={landed}>
-          <div className='title-marquee'>and the axe haiku.</div>
+        <MainBody ref={this.state.sections[4]} landed={this.state.phase === 4}>
+          <FadeImage css={{width: '100%'}} showing={this.state.phase === 4} src={tomatoes} />
+          <div className='title-marquee'>Tomatoes</div>
         </MainBody>
 
-        <SocialIcons landed={landed}>
+        <SocialIcons landed={this.state.landed}>
+          <a style={{ color: '#3c5a99' }} href='https://instagram.com/wagsworths' target='blank'><i className="fab fa-facebook"></i></a>
           <a style={{ color: 'blue' }} href='https://instagram.com/wagsworths' target='blank'><i className="fab fa-instagram circle"></i></a>
           <a style={{ color: '#55acee' }} href='https://twitter.com/wagsworths' target='blank'><i className="fab fa-twitter circle"></i></a>
           <a style={{ color: '#bd081c' }} href='https://pinterest.com/wagsworths' target='blank'><i className="fab fa-pinterest"></i></a>
@@ -218,6 +269,7 @@ class App extends React.Component {
         <Footer>
           © 2019 <a href='http://wagsworthgrooming.com'>Wagsworth Grooming LLC</a>  |  Website by <a href='https://mikedonovan.dev'>mikedonovan.dev</a>
         </Footer>
+        <Menu onNavItemClick={this.handleNavItemClick} phase={this.state.phase} showing={this.state.menuOn} landscape={landscape} />
       </MainContainer>
     );
   }

@@ -19,7 +19,7 @@ const HeaderContainer = styled.header`
 `;
 const Title = styled.title`
   display: flex;
-  transition: color 1000ms ease;
+  color: color: #ddd;;
 `;
 const TitlePiece = styled.div`
   transition: transform 420ms ease, opacity 420ms ease;
@@ -72,6 +72,7 @@ const Hamburger = styled.div`
   transition-delay: 800ms;
   will-change: transform, opacity;
   padding: calc(var(--header-height) / 7);
+  z-index: 20;
 `;
 const HamBar = styled.div`
   background-color: #666;
@@ -90,17 +91,26 @@ const NavItem = styled.nav`
 `;
 
 function Header(props) {
-  console.green('running Header')
+  console.green('running Header', props.phase)
   return (
-    <HeaderContainer>
-      <Title>
+    <HeaderContainer phase={props.phase}>
+      <Title onClick={props.onClickTitle} phase={props.phase}>
         <TitlePiece landed={props.landed}>Wagsworth  </TitlePiece>
         <TitlePiece landed={props.landed}>Grooming</TitlePiece>
       </Title>
-      <Hamburger showing={!props.landscape} landed={props.landed}>
-        <HamBar></HamBar>
-        <HamBar></HamBar>
-        <HamBar></HamBar>
+      <Hamburger onClick={props.onHamburgerClick} showing={!props.landscape} landed={props.landed}>
+        {props.menuOn ? 
+          <>
+            <HamBar></HamBar>
+            <HamBar></HamBar>
+          </>
+          :
+          <>
+            <HamBar></HamBar>
+            <HamBar></HamBar>
+            <HamBar></HamBar>
+          </> 
+        }
       </Hamburger>
       <NavBar showing={props.landscape} landed={props.landed}>
         {props.landscape && <PhoneNumber><a href='tel:+1-303-499-711'>503-867-5309  <i className="fa fa-phone"></i></a></PhoneNumber>}
@@ -113,6 +123,3 @@ function Header(props) {
 }
 
 export default Header;
-
-
-

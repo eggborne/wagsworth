@@ -24,7 +24,7 @@ body {
   overflow: hidden;
 }
 img {
-  width: 60vw;
+  width: 60vmin;
 }
 .fa-instagram {
   transform: scale(1.15); 

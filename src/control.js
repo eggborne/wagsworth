@@ -69,17 +69,9 @@ export class TouchHandler {
     this.swipeActions = {
       'north': function () {
         console.green("UP");
-        window.scrollBy({
-          top: window.innerHeight,
-          behavior: 'smooth'
-        })
       },
       'south': function () {
         console.green("DOWN");
-        window.scrollBy({
-          top: -window.innerHeight,
-          behavior: 'smooth'
-        })
       },
       'west': function () {
         console.green("LEFT");
@@ -102,15 +94,16 @@ export class TouchHandler {
     };
   }
   touchStart(event) {
-    for (var i = 0; i < event.changedTouches.length; i++) {
-      var newTouch = event.changedTouches[i];
+    for (var i = 0; i < event.targetTouches.length; i++) {
+      var newTouch = event.targetTouches[i];
       this.currentTouches.push(new Touch(this, newTouch));
     }
   }
   touchMove(event) {
     var movingTouches = [];
-    for (var i = 0; i < event.changedTouches.length; i++) {
-      var movingTouch = event.changedTouches[i];
+    for (var i = 0; i < event.targetTouches.length; i++) {
+      var movingTouch = event.targetTouches[i];
+      // console.log('moving touch?', movingTouch)
       var touchCopy = { 'identifier': movingTouch.identifier, 'pageX': movingTouch.pageX, 'pageY': movingTouch.pageY };
       movingTouches.push(touchCopy);
     }
@@ -134,13 +127,13 @@ export class TouchHandler {
     },this);
   }
   touchEnd(event) {
-    Array.from(event.changedTouches).forEach(function (touch, i) {
-      var duration = this.currentTouches[i].getDuration();
-      var distance = this.currentTouches[i].getDistance();
-      // if (duration <= this.gestures.tap.time
-      //   && distance.x <= this.gestures.tap.distance && distance.y < this.gestures.tap.distance) {
-      //   true;
-      // }
+    Array.from(event.targetTouches).forEach(function (touch, i) {
+      // var duration = this.currentTouches[i].getDuration();
+      // var distance = this.currentTouches[i].getDistance();
+      // // if (duration <= this.gestures.tap.time
+      // //   && distance.x <= this.gestures.tap.distance && distance.y < this.gestures.tap.distance) {
+      // //   true;
+      // // }
       this.currentTouches.splice(i, 1);
     },this);
   }

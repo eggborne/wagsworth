@@ -49,12 +49,14 @@ export class TouchHandler {
       },
       'swipe': {
         'north': {
-          'distance': -30,
-          'duration': 100
+          // 'distance': -30,
+          'distance': -24,
+          // 'duration': 100
+          'duration': 160
         },
         'south': {
-          'distance': 30,
-          'duration': 100
+          'distance': 24,
+          'duration': 160
         },
         'west': {
           'distance': -40,

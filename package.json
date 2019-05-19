@@ -2,18 +2,12 @@
   "name": "wagsworth",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "@types/jest": "^24.0.12",
-    "@types/node": "^12.0.0",
-    "@types/react": "^16.8.17",
-    "@types/react-dom": "^16.8.4",
-    "@types/styled-components": "^4.1.14",
-    "console-green": "^1.0.3",
+  "dependencies": {    
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-router-dom": "^5.0.0",
     "react-scripts": "3.0.1",
-    "styled-components": "^4.2.0",
-    "typescript": "^3.4.5"
+    "styled-components": "^4.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -36,5 +30,8 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "console-green": "^1.0.3",
+    "cwebp": "^2.0.3"
+  }
 }

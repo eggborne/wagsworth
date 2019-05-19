@@ -1,6 +1,6 @@
 let lastSwiped = 0;
 
-export class Touch {
+class Touch {
   constructor(handler, touchEvent) {
     this.handler = handler;
     this.identifier = touchEvent.identifier;
@@ -29,12 +29,12 @@ export class Touch {
     if (distance.y >= this.handler.gestures.swipe.south.distance && duration <= this.handler.gestures.swipe.south.duration) {
       fullSwipe += "south";
     }
-    if (distance.x <= this.handler.gestures.swipe.west.distance && duration <= this.handler.gestures.swipe.west.duration) {
-      fullSwipe += "west";
-    }
-    if (distance.x >= this.handler.gestures.swipe.east.distance && duration <= this.handler.gestures.swipe.east.duration) {
-      fullSwipe += "east";
-    }
+    // if (distance.x <= this.handler.gestures.swipe.west.distance && duration <= this.handler.gestures.swipe.west.duration) {
+    //   fullSwipe += "west";
+    // }
+    // if (distance.x >= this.handler.gestures.swipe.east.distance && duration <= this.handler.gestures.swipe.east.duration) {
+    //   fullSwipe += "east";
+    // }
     return fullSwipe;
   }
 }
@@ -45,54 +45,54 @@ export class TouchHandler {
     this.gestures = {
       'tap': {
         'time': 75,
-        'distance': 10
+        'distance': 2
       },
       'swipe': {
         'north': {
           // 'distance': -30,
-          'distance': -24,
+          'distance': -12,
           // 'duration': 100
-          'duration': 160
+          'duration': 100
         },
         'south': {
-          'distance': 24,
-          'duration': 160
-        },
-        'west': {
-          'distance': -40,
+          'distance': 12,
           'duration': 100
         },
-        'east': {
-          'distance': 40,
-          'duration': 100
-        }
+        // 'west': {
+        //   'distance': -40,
+        //   'duration': 100
+        // },
+        // 'east': {
+        //   'distance': 40,
+        //   'duration': 100
+        // }
       }
     };
     this.swipeActions = {
       'north': function () {
-        console.green("UP");
+        // console.green("UP");
       },
       'south': function () {
-        console.green("DOWN");
+        // console.green("DOWN");
       },
-      'west': function () {
-        console.green("LEFT");
-      },
-      'east': function () {
-        console.green("RIGHT");
-      },
-      'northwest': function () {
-        console.green("UP-LEFT");
-      },
-      'northeast': function () {
-        console.green("UP-RIGHT");
-      },
-      'southwest': function () {
-        console.green("DOWN-LEFT");
-      },
-      'southeast': function () {
-        console.green("DOWN-RIGHT");
-      },
+      // 'west': function () {
+      //   // console.green("LEFT");
+      // },
+      // 'east': function () {
+      //   // console.green("RIGHT");
+      // },
+      // 'northwest': function () {
+      //   // console.green("UP-LEFT");
+      // },
+      // 'northeast': function () {
+      //   // console.green("UP-RIGHT");
+      // },
+      // 'southwest': function () {
+      //   // console.green("DOWN-LEFT");
+      // },
+      // 'southeast': function () {
+      //   // console.green("DOWN-RIGHT");
+      // },
     };
   }
   touchStart(event) {
@@ -105,7 +105,6 @@ export class TouchHandler {
     var movingTouches = [];
     for (var i = 0; i < event.targetTouches.length; i++) {
       var movingTouch = event.targetTouches[i];
-      // console.log('moving touch?', movingTouch)
       var touchCopy = { 'identifier': movingTouch.identifier, 'pageX': movingTouch.pageX, 'pageY': movingTouch.pageY };
       movingTouches.push(touchCopy);
     }

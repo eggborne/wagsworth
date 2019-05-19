@@ -1,13 +1,29 @@
 :root {
   --main-font: 'Open Sans';
   --title-font: 'Tangerine';
-  --background-color: #98b1a9;
-  --background-color-2: #b2c0dc;
+  --background-color-0: #daf5d8;
+  --background-color-1: #b2c0dc;
+  --background-color-2: #9cb5ac;
+  --background-color-3: #b3a4c4;
+  --background-color-4: #d0b69f;
   --border-radius: 1vmin;
   --header-color: #171515;
+  --off-white: hsl(0, 0%, 65%);
+  --off-blue: hsl(198, 69%, 79%);
+  --action-color: #f3d8be;
 
-  --header-height: 15vw;
-  --footer-height: calc(var(--header-height) * 0.8);
+  --header-height: 0vw;
+  --footer-height: calc(var(--header-height) * 0.6);
+
+  --shift-speed: 0ms;
+
+  --header-shadow: 0 0 calc(var(--header-height) * 0.2) rgba(0,0,0,0.4);
+  --button-color: #212121;
+  --selected-button-color: #213421;
+  --button-gradient: linear-gradient(var(--button-color), #303030);
+  --selected-button-gradient: linear-gradient(var(--selected-button-color), #2b402b);
+
+  --button-shadow: 0 0 calc(var(--header-height) * 0.3) rgba(0,0,0,0.2);
 }
 * {
   box-sizing: border-box;
@@ -15,19 +31,24 @@
 }
 body {
   margin: 0;
+  padding: 0;
   font-family: var(--main-font), sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--background-color);
-  width: 100%;
+  background-color: var(--header-color);
+  width: 100vw;
   height: 100vh;
   overflow: hidden;
 }
-img {
-  width: 60vmin;
+.fa {
+  padding: 0 !important;
+  margin: 0 !important;
 }
-.fa-instagram {
-  transform: scale(1.15); 
+.flipped-x {
+  transform: scaleX(-1);
+}
+@keyframes move-logo {
+  
 }
 @keyframes bob {
   0% {
@@ -56,8 +77,50 @@ img {
     color: rgb(86, 73, 137);
   }
 }
-@media screen and (orientation: landscape) {
-  :root {
-    --header-height: 4.5rem;
+@keyframes pulse-text-action {
+  0% {
+    opacity: 0.9;
   }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes raise-monocle {
+  0% {
+    transform: translateY(6%) rotate(12deg);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+    opacity: 1
+  }
+}
+@keyframes wag {
+  0% {
+    transform: rotate(0deg) translateX(0);
+  }
+  100% {
+    transform: rotate(0.25deg) translateX(-0.1vw);
+  }
+}
+@keyframes wave {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@media screen and (orientation: landscape) {
+  html {
+    width: 411px;
+    height: 900px;
+  }
+  
 }

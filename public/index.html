@@ -2,40 +2,42 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.png" />
-    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1" />
-    <meta name="theme-color" content="#171515" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Tangerine" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.png" or "favicon.png", "%PUBLIC_URL%/favicon.png" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Tangerine&display=block" rel="stylesheet">
+    <meta name="theme-color" content="#171515">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- <meta name="description" content=""> -->
     <title>Wagsworth Grooming</title>
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="icon" sizes="192x192" href="android-chrome-192x192.png">
+    <link rel="apple-touch-startup-image" href="/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-square310x310logo" content="icon_largetile.png">
+    <meta name="msapplication-TileColor" content="#da532c">    
+    <script type='application/ld+json'> 
+      {
+        "@context": "http://www.schema.org",
+        "@type": "ProfessionalService",
+        "name": "Wagsworth Grooming",
+        "url": "https://wagsworthgrooming.com",
+        "logo": "https://wagsworthgrooming.com/wagsworthbanner.jpg",
+        "description": "Wagsworth Grooming professional dog grooming.",
+        "openingHours": "Tu, We, Th, Fr 08:00-17:00 Sa 10:00-04:00",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "telephone": "5028675309",
+          "contactType": "phone"
+        }
+      }
+    </script>    
   </head>
   <body>
     <noscript>You need to enable JavaScript to view this website :(</noscript>
-    <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
-  </body>
+    <div id="root"></div>    
+  </body>  
 </html>

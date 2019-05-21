@@ -1,8 +1,8 @@
 :root {
-  --main-font: 'Open Sans';
-  --title-font: 'Tangerine';
+  --main-font: 'Open Sans', sans-serif;
+  --title-font: 'Tangerine', cursive;
   --background-color-0: #daf5d8;
-  --background-color-1: #b2c0dc;
+  --background-color-1: #99a6c2;
   --background-color-2: #9cb5ac;
   --background-color-3: #b3a4c4;
   --background-color-4: #d0b69f;
@@ -20,10 +20,13 @@
   --header-shadow: 0 0 calc(var(--header-height) * 0.2) rgba(0,0,0,0.4);
   --button-color: #212121;
   --selected-button-color: #213421;
+  --selected-button-border-color: #212c21;
   --button-gradient: linear-gradient(var(--button-color), #303030);
   --selected-button-gradient: linear-gradient(var(--selected-button-color), #2b402b);
 
-  --button-shadow: 0 0 calc(var(--header-height) * 0.3) rgba(0,0,0,0.2);
+  --button-shadow: 0 0 calc(var(--header-height) * 0.05) #050505;
+  --arrow-color: #ddd;
+  --title-color: #474162;
 }
 * {
   box-sizing: border-box;
@@ -40,6 +43,10 @@ body {
   height: 100vh;
   overflow: hidden;
 }
+header {
+  font-family: var(--title-font);
+  font-size: calc(var(--header-height) / 1.4);
+}
 .fa {
   padding: 0 !important;
   margin: 0 !important;
@@ -48,14 +55,14 @@ body {
   transform: scaleX(-1);
 }
 @keyframes move-logo {
-  
+
 }
 @keyframes bob {
   0% {
-    transform: none;
+    transform: translateY(15%);
   }
   100% {
-    transform: translateY(12%);
+    transform: translateY(30%);
   }
 }
 @keyframes pulse-text {
@@ -122,5 +129,5 @@ body {
     width: 411px;
     height: 900px;
   }
-  
+
 }

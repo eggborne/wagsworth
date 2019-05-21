@@ -70,28 +70,28 @@ export class TouchHandler {
     };
     this.swipeActions = {
       'north': function () {
-        // console.green("UP");
+        // // console.green("UP");
       },
       'south': function () {
-        // console.green("DOWN");
+        // // console.green("DOWN");
       },
       // 'west': function () {
-      //   // console.green("LEFT");
+      //   // // console.green("LEFT");
       // },
       // 'east': function () {
-      //   // console.green("RIGHT");
+      //   // // console.green("RIGHT");
       // },
       // 'northwest': function () {
-      //   // console.green("UP-LEFT");
+      //   // // console.green("UP-LEFT");
       // },
       // 'northeast': function () {
-      //   // console.green("UP-RIGHT");
+      //   // // console.green("UP-RIGHT");
       // },
       // 'southwest': function () {
-      //   // console.green("DOWN-LEFT");
+      //   // // console.green("DOWN-LEFT");
       // },
       // 'southeast': function () {
-      //   // console.green("DOWN-RIGHT");
+      //   // // console.green("DOWN-RIGHT");
       // },
     };
   }
@@ -142,6 +142,6 @@ export class TouchHandler {
     document.body.addEventListener('touchstart', this.touchStart.bind(this), true);
     document.body.addEventListener('touchmove', this.touchMove.bind(this), true);
     document.body.addEventListener('touchend', this.touchEnd.bind(this), true);
-    this.bound = true;
+    // this.bound = true;
   }
 }

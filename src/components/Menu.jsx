@@ -34,12 +34,11 @@ const NavGroup = styled.div`
   `;
 const NavItem = styled.nav`
   border-radius: 2vw;
-  font-size: calc(var(--nav-item-height) / 2);
+  font-size: calc(var(--nav-item-height) / 2.25);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 60vw;
-
+  width: 55vw;
   flex-basis: var(--nav-item-height);
   transform: translateX(-10%);
   margin: 1vh;
@@ -47,9 +46,10 @@ const NavItem = styled.nav`
   transition: transform 420ms ease, opacity 420ms ease;
   ${props => (props.selected ?
     `
-  background-color: var(--selected-button-color);
-  background-image: var(--selected-button-gradient);
+  background-color: var(--action-color-dark);
+  background-image: none;
   box-shadow: none;
+  border: 0.2vw inset #444,
 
   `
   :

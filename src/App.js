@@ -2,11 +2,13 @@ import React, { Suspense } from 'react';
 // import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import styled from 'styled-components/macro';
 import Header from './components/Header';
-// import Menu from './components/Menu';
+import Menu from './components/Menu';
 import { TouchHandler } from './scripts/control';
 import Hamburger from './components/Hamburger';
-import { getLine, getParagraph } from './scripts/quotes.js';
-const Menu = React.lazy(() => import('./components/Menu'));
+import ScrollPanel from './components/ScrollPanel';
+import { getLine } from './scripts/quotes.js';
+
+// const Menu = React.lazy(() => import('./components/Menu'));
 
 const initialTime = window.performance.now();
 
@@ -18,11 +20,11 @@ const imageExt = true ? '.png' : '.webp';
 
 let headline1 = undefined;
 let headline2 = undefined;
-let secHeadline1 = undefined;
-let paragraph1 = undefined;
-let paragraph2 = undefined;
-let paragraph3 = undefined;
-let paragraph3end = undefined;
+
+const textItems = {
+  headlines: [],
+  paragraphs: []
+};
 
 
 let landscape = window.innerWidth > window.innerHeight;
@@ -43,7 +45,8 @@ let monocleLogo = require(`${logoPath}/monocle${blackLogo ? 'white' : 'black'}${
 let sectionHeight = window.innerHeight - headerHeight;
 let shiftSpeed = 420;
 
-document.documentElement.style.setProperty('--header-height', headerHeight + 'px');
+document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
+document.documentElement.style.setProperty('--section-height', `${sectionHeight}px`);
 document.documentElement.style.setProperty('--shift-speed', `${shiftSpeed}ms`);
 
 const randomInt = (min, max) => {
@@ -129,8 +132,6 @@ const Monocle = styled(MainLogo)`
   transform-origin: 70% 60%;
   transform: translateY(6%) rotate(12deg);
   opacity: 0;
-  // transition: opacity 1200ms ease;
-  // transition-delay: 1500ms;
   z-index: 1;
 `;
 const SectionContainer = styled.div`
@@ -139,33 +140,36 @@ const SectionContainer = styled.div`
   flex-direction: column;
   justify-content: space-between;
   transform: translateY(-${props => sectionHeight * props.phase}px);
+  will-change: transform;
   ${props => props.animating &&
     'transition: transform var(--shift-speed) ease'
   };
+
 `;
 const ScrollSec = styled.section`
-  /* position: relative; */
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: calc(var(--header-height) * 1.5) 1fr var(--header-height);
   grid-template-columns: var(--footer-height) 1fr var(--footer-height);
   align-items: center;
   justify-items: center;
-  font-size: calc(10px + 1.5vmin);
+  font-size: var(--normal-font-size);
   color: #ddd;
-  background: linear-gradient(rgba(0,0,0,0.2), transparent,  transparent, rgba(0,0,0,0.3));
+  background: linear-gradient(rgba(0,0,0,0.2), transparent,  transparent,  transparent, rgba(0,0,0,0.2));
   font-family: var(--title-font);
-  ${props => props.landed ?
+  height: ${sectionHeight}px;
+  min-height: ${sectionHeight}px;
+  max-height: ${sectionHeight}px;
+  ${false ?
   `
   // opacity: 1;
-  transition: none;
+  // transition: none;
   `
   :
   `
   // opacity: 0;
   `
   }
-  /* transition: opacity var(--shift-speed) ease; */
   & .title-marquee {
     text-align: center;
     opacity: ${props => (props.landed ? '1' : '0')};
@@ -210,9 +214,9 @@ const ScrollSec = styled.section`
   ${props => props.leaving &&
     `
       // transition: none !important;
-      & * {
-        transition: none !important;
-      }
+      // & * {
+      //   transition: none !important;
+      // }
     `
   }
   /* & > * {
@@ -223,19 +227,25 @@ const SectionBody = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-around;
-  /* justify-self: stretch; */
+  justify-content: space-between;
   align-self: stretch;
+  padding-top: 10vw;
+  padding-bottom: 10vw;
 `;
 const SectionText = styled.summary`
   text-align: center;
   font-family: var(--main-font);
   color: #333;
-  font-size: ${headerHeight / 4.5}px;
+  font-size: var(--normal-font-size);
   padding-left: 15vw;
   padding-right: 15vw;
   transition: transform 800ms ease, opacity 600ms ease;
   transition-delay: calc(var(--shift-speed));
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   will-change: transform, opacity;
   ${props => (props.showing ?
   `
@@ -271,6 +281,7 @@ const IntroSection = styled(ScrollSec)`
   box-shadow: ${props => (props.phase === 1 && props.inTransit.to === 1 && props.lastPhase === 0) && 'var(--header-shadow)'};
   grid-template-columns: 1fr;
   grid-template-rows: 1fr 40vh var(--header-height);
+  ${props => props.leaving && 'opacity: 0;'}
 
 `;
 const IntroMessage = styled.div`
@@ -287,147 +298,11 @@ const IntroMessage = styled.div`
     line-height: 90%;
   }
 `;
-const Chickens = styled(ScrollSec)`
-  grid-template-rows: calc(var(--header-height) * 1.45) auto 1fr var(--footer-height) var(--header-height);
-  grid-template-columns: var(--footer-height) 1fr var(--footer-height);
-  background-color: #efefef;
-  align-items: center;
-  justify-items: center;
-  height: ${sectionHeight}px;
-  & summary {
-    transform: ${props => props.landed ? 'none' : 'translateY(2vh)'};
-  }
-  & > * {
-    /* outline: 2px solid green; */
-  }
-`;
-const Scissors = styled(ScrollSec)`
-  background-color: var(--background-color-1);
-  height: ${sectionHeight}px;
-  & > .title-marquee {
-    transform: ${props => (props.landed ? 'none' : 'translateX(4vw)')};
-  }
-  & img {
-    height: ${sectionHeight / 4.5}px;
-  }
-  & summary {
-    transform: ${props => props.landed ? 'none' : 'translateX(-4vw)'};
-    color: white;
-  }
-  & header {
-    color: white;
-  }
-`;
-const OtherChickens = styled(ScrollSec)`
-  background-color: white;
-  height: ${sectionHeight}px;
-  & > .title-marquee {
-    transform: ${props => (props.landed ? 'none' : 'translateY(-4vw)')};
-  }
-  & img {
-    transform: ${props => (props.landed ? 'translateX(-4vw)' : 'translateX(-8vw)')};
-    transition-duration: 1000ms;
-  }
-  & summary {
-    transform: ${props => props.landed ? 'none' : 'translateY(2vh)'};
-  }
-`;
-const Tomatoes = styled(ScrollSec)`
-  background-color: var(--background-color-3);
-  height: ${sectionHeight}px;
-  & > .title-marquee {
-    transform: ${props => (props.landed ? 'none' : 'translateX(4vw)')};
-  }
-  & img {
-    transform: ${props => (props.landed ? 'scaleX(1)' : 'scaleX(0.9)')};
-  }
-  & header {
-    color: white;
-  }
-`;
-const Indians = styled(ScrollSec)`
-  background-color: white;
-  height: ${sectionHeight}px;
-  & img {
-    transform: ${props => (props.landed ? 'scale(1)' : 'scale(0.8)')};
-  }
-`;
-const MardiGras = styled(ScrollSec)`
-background-color: var(--background-color-4);
-  min-height: 0;
-  min-height: calc(${sectionHeight}px - var(--footer-height));
-  max-height: calc(${sectionHeight}px - var(--footer-height));
-  // height: ${sectionHeight}px;
-
-  & > .title-marquee {
-    transform: ${props => (props.landed ? 'none' : 'translateX(4vw)')};
-  }
-  & header {
-    color: white;
-  }
-`;
-const SectionTitle = styled.header`
-  text-align: center;
-  /* animation: pulse-text infinite 2s ease;
-  animation-direction: alternate; */
-  color: var(--title-color);
-  opacity: ${props => (props.landed ? '1' : '0.5')};
-  font-size: ${sectionHeight / 12}px;
-  transform: ${props => (props.landed ? 'none' : 'translateX(-4vmin)')};
-  text-shadow: 2px 2px 2vw #33333399;
-  transition: transform 1200ms ease, opacity 1000ms ease;
-  transition-delay: 0ms;
-  ${props => props.instantMode && `transition-delay: 0ms !important;`}
-`;
-const SectionHeadline = styled.div`
-  color: black;
-  opacity: ${props => (props.landed ? '0.47' : '0')};
-  font-size: ${sectionHeight / 18}px;
-  transform: ${props => (props.landed ? 'none' : 'scale(0.95)')};
-  transition: transform 1200ms ease, opacity 1000ms ease;
-  transition-delay: var(--shift-speed);
-  ${props => props.instantMode && `transition-delay: 0ms !important;`}
-`;
-const DotDisplay = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  opacity: 0.8;
-`;
-const Dot = styled.div`
-  height: calc(var(--footer-height) / 6);
-  width: calc(var(--footer-height) / 6);
-  border-radius: 50%;
-  margin-left: 1vw;
-  margin-right: 1vw;
-  background: #555;
-  ${props => props.highlighted ?
-  `
-  opacity: 1;
-  transform: scale(1.4);
-  background: #555;
-  `
-  :
-  `
-  opacity: 0.4;
-  transform: none;
-  background: #555;
-  `
-  };
-  transition: transform 300ms, opacity 300ms;
-`;
 const BottomPanel = styled.div`
   /* position: absolute; */
   bottom: 0;
   width: 100vw;
   height: calc(var(--header-height) * 0.9);
-  ${props => props.phase < props.sectionCount - 1 &&
-    `
-  background: #17151511;
-  // background: linear-gradient(#17151555, #17151599);
-  `
-  }
   /* box-shadow: var(--header-shadow); */
   display: flex;
   align-items: center;
@@ -468,7 +343,7 @@ const UpArrow = styled(DownArrow)`
   animation: bob infinite 800ms linear alternate;
 `;
 const Footer = styled.footer`
-  // position: absolute;
+  position: absolute;
   left: 0;
   bottom: 0;
   font-family: var(--main-font), sans-serif;
@@ -490,6 +365,7 @@ const Footer = styled.footer`
 `;
 const ByLine = styled.div`
   font-size: calc(var(--footer-height) / 5);
+  opacity: 0.8;
 `;
 class App extends React.PureComponent {
   constructor() {
@@ -497,13 +373,44 @@ class App extends React.PureComponent {
     super();
     this.state = {
       sections: [
-        {title: 'intro', headline: '', summary: '', ref: React.createRef()},
-        {title: 'Chickens', headline: secHeadline1, summary: paragraph1, ref: React.createRef()},
-        {title: 'Scissors', headline: secHeadline1, summary: paragraph2, ref: React.createRef()},
-        {title: 'Other Chickens', headline: secHeadline1, summary: paragraph3, ref: React.createRef()},
-        {title: 'Tomatoes', headline: secHeadline1, summary: paragraph3, ref: React.createRef()},
-        {title: 'Indians', headline: secHeadline1, summary: paragraph3, ref: React.createRef()},
-        {title: 'Mardi Gras', headline: secHeadline1, summary: paragraph3, ref: React.createRef()}
+        {
+          title: 'intro', ref: React.createRef()
+        },
+        {
+          title: 'Chickens', ref: React.createRef(),
+          style: { backgroundColor: `#efefef` },
+          mainImage: require(`./assets/largechicken${imageExt}`),
+          slides: [{},{},{}]
+        },
+        {
+          title: 'Services', ref: React.createRef(),
+          style: { backgroundColor: `var(--background-color-1)` },
+          mainImage: require(`./assets/scissors${imageExt}`),
+          slides: [{}, {}, {}, {}]
+        },
+        {
+          title: 'About Me', ref: React.createRef(),
+          style: {backgroundColor: 'white'},
+          mainImage: require(`./assets/whitechicken${imageExt}`),
+          slides: [{},{},{}]
+        },
+        {
+          title: 'Tomatoes', ref: React.createRef(),
+          style: {backgroundColor: `var(--background-color-3)`},
+          mainImage: require(`./assets/tomatoes.jpg`),
+          slides: [{},{}]
+        },
+        {
+          title: 'F.A.Q.', ref: React.createRef(),
+          style: { backgroundColor: 'white' },
+          mainImage: require(`./assets/orangechicken${imageExt}`),
+          slides: [{},{},{}]
+        },
+        {title: 'Mardi Gras', ref: React.createRef(),
+        style: {backgroundColor: `var(--background-color-4)`},
+        mainImage: require(`./assets/graychicken${imageExt}`),
+          slides: []
+        }
       ],
       dogHeadContainer: React.createRef(),
       phase: 0,
@@ -598,22 +505,30 @@ class App extends React.PureComponent {
 
   fillDummyText = (newPhase) => {
     if (newPhase === 0) {
-      console.green('getting new headlines')
       headline1 = getLine(4,0,true);
-      headline2 = getLine(8,0,true);
+      headline2 = getLine(6,0,true);
     } else if (newPhase === 1) {
-      secHeadline1 = getLine(4,0,true);
-      paragraph1 = getLine(16);
+      textItems.headlines[newPhase] = getLine(4,0,true);
+      textItems.paragraphs[newPhase] = getLine(16);
     } else if (newPhase === 2) {
-      paragraph2 = getLine(24) + ' ' + getLine(24);
+      textItems.headlines[newPhase] = getLine(5,0,true);
+      textItems.paragraphs[newPhase] = getLine(24) + ' ' + getLine(24);
     } else if (newPhase === 3) {
-      paragraph3 =  getLine(30, 12);
-      paragraph3end =  getLine(50, 12);
+      textItems.headlines[newPhase] = getLine(6,0,true);
+      textItems.paragraphs[newPhase] =  getLine(21, 12);
+    } else if (newPhase === 4) {
+      textItems.headlines[newPhase] = getLine(8,0,true);
+      textItems.paragraphs[newPhase] =  getLine(20, 12);
+    } else if (newPhase === 5) {
+      textItems.headlines[newPhase] = getLine(5,0,true);
+      textItems.paragraphs[newPhase] =  getLine(40, 12);
+    } else if (newPhase === 6) {
+      textItems.headlines[newPhase] = getLine(4,0,true);
+      textItems.paragraphs[newPhase] =  getLine(20, 12);
     }
   }
 
   componentDidMount = () => {
-
     setTimeout(() => {
       this.setState({
         lazyLoad1: true
@@ -657,6 +572,8 @@ class App extends React.PureComponent {
       currentTransit.from = currentPhase;
       currentTransit.to = newPhase;
       this.fillDummyText(newPhase);
+      // console.pink('-------------------------------------------- changePhase setting phase', newPhase)
+      // console.pink('-------------------------------------------- changePhase setting lastPhase', currentPhase)
       this.setState({
         lastPhase: currentPhase,
         phase: newPhase,
@@ -715,6 +632,9 @@ class App extends React.PureComponent {
   }
 
   render() {
+
+    console.log('adjfhkdjsfhjdsf');
+    console.log(textItems)
     if (this.state.landed) {
       // console.count('App');
     }
@@ -746,7 +666,7 @@ class App extends React.PureComponent {
           <Grooming src={groomingLogo} showing={this.state.landed} collapsed={collapsed} />
         </LogoContainer>
 
-        <SectionContainer animating={!this.state.instantMode} phase={this.state.phase} moving={this.state.inTransit}>
+        <SectionContainer allLoaded={this.state.lazyLoad3} animating={!this.state.instantMode} phase={this.state.phase} moving={this.state.inTransit}>
           <IntroSection phase={this.state.phase} index={0} phase={this.state.phase} lastPhase={this.state.lastPhase} inTransit={this.state.inTransit} instantMode={this.state.instantMode} entering={this.state.inTransit.to === 0} leaving={this.state.inTransit.from === 0} ref={this.state.sections[0].ref} landed={this.state.landed && this.state.phase === 0}>
             <div></div>
             <IntroMessage>
@@ -758,95 +678,39 @@ class App extends React.PureComponent {
             </BottomPanel>
           </IntroSection>
           {(this.state.lazyLoad1) &&
-          <Chickens phase={this.state.phase} index={1} instantMode={this.state.instantMode} entering={this.state.inTransit.to === 1} leaving={this.state.inTransit.from === 1} ref={this.state.sections[1].ref} landed={this.state.phase === 1}>
-          {/* <Chickens landed={this.state.phase === 1} sections={this.state.sections} sectionData={this.state.sections[1]} phase={this.state.phase} index={1} instantMode={this.state.instantMode} entering={this.state.inTransit.to === 1} leaving={this.state.inTransit.from === 1} inTransit={this.state.inTransit} > */}
-            <SectionTitle className='title-marquee' landed={this.state.phase === 1} instantMode={this.state.instantMode}>{this.state.sections[1].title}</SectionTitle>
-            <SectionHeadline landed={this.state.phase === 1} instantMode={this.state.instantMode}>{secHeadline1}</SectionHeadline>
-              <SectionBody>
-                <FadeImage showing={this.state.phase === 1} src={largeChicken} />
-                <SectionText showing={this.state.phase === 1}>{paragraph1}</SectionText>
-              </SectionBody>
-              <DotDisplay>
-                <Dot highlighted={true} /><Dot highlighted={false} /><Dot highlighted={false} />
-              </DotDisplay>
-              <BottomPanel onTouchStart={() => { this.changePhase(2) }} phase={this.state.phase} sections={sectionCount} landed={this.state.phase === 1} entering={this.state.inTransit.to === 1} leaving={this.state.inTransit.from === 1}>
-                <DownArrow showing={this.state.phase === 1} landed={this.state.landed} />
-              </BottomPanel>
-            </Chickens>
-          }
-
-          {(this.state.lazyLoad2) &&
             <>
-              <Scissors phase={this.state.phase} index={2} instantMode={this.state.instantMode} entering={this.state.inTransit.to === 2} leaving={this.state.inTransit.from === 2} ref={this.state.sections[2].ref} landed={this.state.phase === 2}>
-                <SectionTitle className='title-marquee'>{this.state.sections[2].title}</SectionTitle>
-                <SectionBody>
-                  <FadeImage showing={this.state.phase === 2} src={scissors} />
-                  <SectionText showing={this.state.phase === 2}>{paragraph2}</SectionText>
-                </SectionBody>
-                {/* <DotDisplay>
-                  <Dot highlighted={true} /><Dot highlighted={false} />
-                </DotDisplay> */}
-                <BottomPanel onTouchStart={() => { this.changePhase(3) }} phase={this.state.phase} sections={sectionCount} landed={this.state.phase === 2} entering={this.state.inTransit.to === 2} leaving={this.state.inTransit.from === 2}>
-                  <DownArrow showing={this.state.phase === 2} landed={this.state.landed} />
-                </BottomPanel>
-            </Scissors>
-
-            <OtherChickens phase={this.state.phase} index={3} instantMode={this.state.instantMode} entering={this.state.inTransit.to === 3} leaving={this.state.inTransit.from === 3} ref={this.state.sections[3].ref} landed={this.state.phase === 3}>
-              <SectionTitle className='title-marquee'>{this.state.sections[3].title}</SectionTitle>
-              <SectionBody>
-                <FadeImage showing={this.state.phase === 3} src={whiteChicken} />
-                <SectionText showing={this.state.phase === 3}>
-                  <p>{paragraph3}</p>
-                  <p>{paragraph3end}</p>
-                </SectionText>
-              </SectionBody>
-              <BottomPanel onTouchStart={() => { this.changePhase(4) }} phase={this.state.phase} sections={sectionCount} landed={this.state.phase === 3} entering={this.state.inTransit.to === 3} leaving={this.state.inTransit.from === 3}>
-                <DownArrow showing={this.state.phase === 3} landed={this.state.landed} />
-              </BottomPanel>
-            </OtherChickens>
-            </>
-          }
-          {(this.state.lazyLoad3) &&
-            <>
-              <Tomatoes phase={this.state.phase} index={4} instantMode={this.state.instantMode} entering={this.state.inTransit.to === 4} leaving={this.state.inTransit.from === 4} ref={this.state.sections[4].ref} landed={this.state.phase === 4}>
-                <SectionTitle className='title-marquee'>{this.state.sections[4].title}</SectionTitle>
-                <SectionBody>
-                  <FramedPhoto showing={this.state.phase === 4} src={tomatoes} />
-                  <SectionText showing={this.state.phase === 4}></SectionText>
-                </SectionBody>
-                <BottomPanel onTouchStart={() => { this.changePhase(5) }} phase={this.state.phase} sections={sectionCount} landed={this.state.phase === 4} entering={this.state.inTransit.to === 4} leaving={this.state.inTransit.from === 4}>
-                  <DownArrow showing={this.state.phase === 4} landed={this.state.landed} />
-                </BottomPanel>
-              </Tomatoes>
-
-              <Indians phase={this.state.phase} index={5} instantMode={this.state.instantMode} entering={this.state.inTransit.to === 5} leaving={this.state.inTransit.from === 5} ref={this.state.sections[5].ref} landed={this.state.phase === 5}>
-                <SectionTitle className='title-marquee'>{this.state.sections[5].title}</SectionTitle>
-                <SectionBody>
-                  <FadeImage showing={this.state.phase === 5} src={orangeChicken} />
-                  <SectionText showing={this.state.phase === 4}></SectionText>
-                </SectionBody>
-                <BottomPanel onTouchStart={() => { this.changePhase(6) }} phase={this.state.phase} sections={sectionCount} landed={this.state.phase === 5} entering={this.state.inTransit.to === 5} leaving={this.state.inTransit.from === 5}>
-                  <DownArrow showing={this.state.phase === 5} landed={this.state.landed} />
-                </BottomPanel>
-              </Indians>
-
-              <MardiGras phase={this.state.phase} index={6} instantMode={this.state.instantMode} entering={this.state.inTransit.to === 6} leaving={this.state.inTransit.from === 6} ref={this.state.sections[6].ref} landed={this.state.phase === 6}>
-                <SectionTitle className='title-marquee'>{this.state.sections[6].title}</SectionTitle>
-                <SectionBody>
-                  <FadeImage showing={this.state.phase === 6} src={grayChicken} />
-                  <SectionText showing={this.state.phase === 4}></SectionText>
-                </SectionBody>
-                <BottomPanel onTouchStart={() => { this.changePhase(1) }} phase={this.state.phase} sections={sectionCount} landed={this.state.phase === 6} entering={this.state.inTransit.to === 6} leaving={this.state.inTransit.from === 6}>
-                  <UpArrow showing={this.state.phase === 6} landed={this.state.landed} />
-                </BottomPanel>
-              </MardiGras>
+            {this.state.sections.filter(section => section.title !== 'intro').map((section, i) => {
+                if (this.state.lazyLoad1 & i < 2 || this.state.lazyLoad2 && i < 4 || this.state.lazyLoad3) {
+                  return (
+                    <ScrollPanel
+                      key={this.state.sections[i + 1].title}
+                      slides={this.state.sections[i + 1].slides}
+                      landed={this.state.landed}
+                      headline={textItems.headlines[i + 1]}
+                      bottomText={textItems.paragraphs[i + 1]}
+                      style={this.state.sections[i + 1].style}
+                      height={sectionHeight}
+                      inTransit={this.state.inTransit}
+                      onClickNextPhase={() => this.changePhase(i + 2)}
+                      centerImage={this.state.sections[i + 1].mainImage}
+                      phase={this.state.phase}
+                      lastPhase={this.state.lastPhase}
+                      index={i + 1}
+                      instantMode={this.state.instantMode}
+                      entering={this.state.inTransit.to === i + 1}
+                      leaving={this.state.inTransit.from === i + 1}
+                      sections={this.state.sections}
+                    />
+                  );
+                }
+              })}
               <Footer>
                 <ByLine>© {new Date().getFullYear()} <a href='http://wagsworthgrooming.com'>Wagsworth Grooming</a>  |  Website by <a href='mailto:mike@mikedonovan.dev'>mike@mikedonovan.dev</a></ByLine>
               </Footer>
             </>
           }
         </SectionContainer>
-        <Suspense fallback={<></>}>
+        {/* <Suspense fallback={<></>}> */}
           <Menu
           sections={this.state.sections.slice(1, this.state.sections.length)}
           onNavItemClick={this.handleNavItemClick}
@@ -855,7 +719,7 @@ class App extends React.PureComponent {
           showing={this.state.menuOn}
           landscape={landscape} />
           <Hamburger onHamburgerClick={this.handleHamburgerClick} showing={!landscape} landed={this.state.landed} menuOn={this.state.menuOn} />
-        </Suspense>
+        {/* </Suspense> */}
       </MainContainer>
     );
   }

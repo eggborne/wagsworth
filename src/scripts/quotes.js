@@ -1,6 +1,6 @@
 import React from 'react';
 
-const randomInt = (min, max) => {
+export const randomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 const adLines = [
@@ -81,7 +81,7 @@ const adLines = [
   `I thought I saw a graham cracker out there`,
   `There's still plenty of meat on that bone`,
   `Now you take this home, throw it in a pot, add some broth, a potato`,
-  `Baby, you got a stew going`,
+  `You take this home, throw it in a pot, add some broth, a potato — baby, you got a stew going`,
   `Never once touched my per diem`,
   `Army had a half day`,
   `The mere fact that you call making love "pop pop" tells me that you're not ready`,
@@ -105,7 +105,6 @@ const adLines = [
   `Finally, some good news from this guy`,
   `There's no other way to take that`,
   `He's lost his left hand, so he's going to be all right`,
-  `I cannot survive under the house`,
   `Perhaps an attic shall I seek`,
   `Don't call my escorts whores`,
   `He's definitely got a type`,
@@ -122,7 +121,7 @@ const adLines = [
   `I was trained by Army`,
   `I don't want to blame it all on 9/11, but it certainly didn't help`,
   `Annyong`,
-  `You don't wax a new car`,
+  `Brand new cars don't get waxed`,
   `Maybe I'll put it in her brownie`,
   `You can sink your arrow into my buttocks any time`,
   `I thought it was a pool toy`,
@@ -150,9 +149,8 @@ const adLines = [
   `You look like the window of a butcher shop`,
   `You told me I wasn't fit to serve`,
   `They even touched my Charlie Browns`,
-  `Man, it's tired in here`,
+  `It's tired in here`,
   `Make love in your own hand, mother`,
-  `You see how he treats me just because he thinks I'm having an affair with the boy's uncle?`,
   `Sometimes love should be terrifying`,
   `My Army training tells me that this is going to be a hot mission`,
   `I don't date whores`,
@@ -251,7 +249,7 @@ const adLines = [
   `You, sir, are a mouthful`,
   `If I can't find a horny immigrant by then, I don't deserve to stay here`,
   `There's a man inside me, and only when he's finally out can I walk free of pain`,
-  `I'm afraid I prematurely shot my wad on what was supposed to be a "dry run", if you will, so I'm afraid I have something of a mess on my hands`,
+  `I'm afraid I prematurely shot my wad on what was supposed to be a "dry run", if you will, so now I'm afraid I have something of a mess on my hands`,
   `I've made a huge mistake`,
   `You are playing adults with fully-formed libidos, not two young men playing grab-ass in the shower`,
   `I can't go on a million bike rides whenever you want me to`,
@@ -322,7 +320,7 @@ const adLines = [
   `He's an alpaca`,
   `One of this guy's eyebrows just fell in the bowl of candy beans`,
   `I think George Michael is hiding Ann in the attic`,
-  `It's as Ann as the nose on plain's face`,
+  `It's as Ann as the nose on Plain's face`,
   `I have Pop-Pop in the attic`,
   `Who wants to go to the hospital?`,
   `That was 100% inappropriate, and I do apologize profusely`,
@@ -352,6 +350,7 @@ const adLines = [
   `You'd think a man locked up in prison would able to abstain`,
   `Your father with his disgusting tweaking`,
   `I couldn't breast feed any of you kids because of that man`,
+  `This is the nicest she's been since she found out that Rosa could breast-feed Buster`,
   `First you dump all over it, now you want to know how it's done`,
   `I feel like the prettiest girl at the dance`,
   `I need to go take down the buffet and set up the leather pony`,
@@ -374,11 +373,128 @@ const adLines = [
   `There's a new daddy in town. A discipline daddy.`,
   `I tried hitchhiking, but it's hard to do without a thumb`,
   `Now what we do is we paint our lips Joan Crawford red, pop on a little blue eyeliner and then plant a lipstick kiss on every one of them`,
-  `But where did the lighter fluid come from?`,
+  `Still, where'd the lighter fluid come from?`,
   `Larry, go to a mirror`,
   `Why am I not going under water?`,
-  `Why did I lose all the weight if they’re going to put me in a pool cover?`,
+  `Why did I lose all the weight if they're going to put me in a pool cover?`,
+  `I wish I could draw her nose`,
+  `I just found out that my cellular telephone was a lemon`,
+  `Are you wearing my dead wife's maternity clothes?`,
+  `I can't get this ham open`,
+  `If he's got a shot with her, just give me a little tap on the fanny`,
+  `Now, when you do this without getting punched in the chest, you'll have more fun`,
+  `The Blue Man Group might need me, and I do deserve a fancy phone`,
+  `The doctor said I couldn't be a mother now if I tried`,
+  `I'm much, much, much older than 15`,
+  `And the worst part is he thinks he's passing`,
+  `Wow, that does sound like a little girl`,
+  `I'm going for a hot Ding Dong`,
+  `She said “tingling” like 75 times`,
+  `You smell like a pine cone`,
+  `I'm on bad mushrooms`,
+  `This close, they always look like landscape`,
+  `There were cutoffs up here?`,
+  `What are you doing with Mother's rape horn?`,
+  `Do you want to steer, or are you too old to sit on your pop's lap and drive?`,
+  `They impounded my humble trailer`,
+  `Does this look contagious to you?`,
+  `Nice to be back in a queen`,
+  `Let the great experiment begin`,
+  `There's got to be a better way to say that`,
+  `I am having the time of my life`,
+  `I haven't met Ann`,
+  `I kind of want to buy her a diamond`,
+  `I'm sure that Egg is a very nice person`,
+  `I heard zoo noises`,
+  `Which pinky do you use less?`,
+  `Nothing on the inside`,
+  `I'm not proud of the way I was so grossed out when I found out you were gross before`,
+  `I'm just hoping to get mildly injured so I can get out of the Army`,
+  `I think my nipples are bleeding`,
+  `Flashes of Quincy`,
+  `I think the plant lady's wearing a thong`,
+  `Don't be such an Ann hog`,
+  `Go see a Star War`,
+  `Why am I not blacking out?`,
+  `He swore by that Glisten`,
+  `Let's go dig up your uncle`,
+  `I will be head to toe in blue makeup until 8:01 in case the Blue Man Group needs their understudy`,
+  `Are we having yams?`,
+  `First I blow him, then I poke him`,
+  `I don't think we need people trying to compete with what I'm wearing`,
+  `Don't ask me, I'm just the boy's father`,
+  `No one would believe that a woman like me would have a gay son`,
+  `I can see marinating a chicken in that`,
+  `Your Tweety Bird dance just cost us a run, you moron`,
+  `How do we filter out the teases? We don't let them in.`,
+  `I am stable as a table`,
+  `I would hardly call my mother a girl, but yes, she's still very much a part of my life`,
+  `Everybody thinks they're Frank Sinatra`,
+  `They make me feel dressier`,
+  `A piano could stand on those legs`,
+  `Guess she didn't see the drawings`,
+  `You have undone all of Dr. Sandor Plumb's work`,
+  `I need to prove to her that I'm not just a man, but a man's man`,
+  `Shall I put the Posturepedic in the down position?`,
+  `Read me the appetizers again`,
+  `Did you have too much club sauce on your calamari?`,
+  `I tried to drink some of the water, and it was too hot and it tasted like soy sauce`,
+  `I think the teriyaki chicken burst`,
+  `This isn't turning into the party hangout I hoped`,
+  `Stick a wrench in me, I'm done`,
+  `Someone order 140 pounds of upper-body strength?`,
+  `It's just something the body does when you shake it`,
+  `Well, I'm all grown up now`,
+  `How'd you like to take a nap, baldy?`,
+  `Let's not spin in the comfy chair`,
+  `I got Michael out of his marriage, didn't I?`,
+  `I need macaroons`,
+  `You can win every argument like that, but that does not make you right`,
+  `I really hate it when you put on the God costume`,
+  `I'm cloaking myself in her scent`,
+  `I was made to understand that there would be grilled cheese sandwiches here`,
+  `Will someone please have the decency to punch me in the face?`,
+  `Mom always taught us to curl up in a ball and remain motionless when confronted`,
+  `We have unlmited juice?`,
+  `You old horny slut`,
+  `We all know you're Annyong`,
+  `No, Mother, I can blow myself`,
+  `Her?`,
+  `She was made in a cup, like soup`,
+  `Oh, I'm sorry, I forgot: your wife is dead`,
+  `The one thing I will never do is not tell him that I'm taking him to a cabin in the woods and then not take him`,
+  `He was our miracle baby`,
+  `It's like my heart is getting hard`,
+  `I know what an erection feels like, Michael`,
+  `Those aren't even birds`,
+  `But I'm white`,
+  `It ain't easy being white`,
+  `I'm Mom and I want to shoot down everything you say so I feel good about myself`,
+  `Lets deal some drugs`,
+  `Why do you think I wear these?`,
+  `A magician never reveals his secrets`,
+  `When's that voice gonna drop?`,
+  `I'm gonna go get sexy`,
+  `They said he was some kind of scientist`,
+  `Speaking of settling, How's Ann?`,
+  `It's hard to gauge time`,
+  `I like the way they think`,
+  `I was hoping he would be gifted sexually`,
+  `If this were a Lifetime Moment of Truth movie, this would be our act break`,
+  `A flower in my garden, a mystery in my panties`,
+  `I'm a scholar. I enjoy scholarly pursuits`,
+  `The warden could easily be black`,
+  `Who is this shiny building of a man?`,
+  `Chickens don't clap`,
+  `I've got a stair car full of Mexican laborers that would love a day's work`,
+  `Are beads cheap?`,
+  `We'll see who brings in more honey`,
+  `He's thinking about bees again`,
+  `We're going to have to figure out something to do so that people can look at you without wanting to kill themselves`,
+  `You don’t know a good bird hospital, do you?`
 ];
+
+export const numberOfLines = adLines.length;
 
 const Generator = class {
   constructor() {
@@ -409,6 +525,37 @@ export const getLine = (maxWords = 5000, minWords = 0, noPunc) => {
   // }
   return headline + addendum;
 };
+export const getSelfStatement = (maxChars = 100, noPunc) => {
+  let statementArray = generator.lines.filter(line => line[line.length - 1] !== '?'
+    && line.length <= maxChars
+    && (line.split(' ')[0] === 'I'
+    || line.split(' ')[0] === 'I\'m'
+    || line.split(' ')[0] === 'My')
+  );
+  let rando = randomInt(0, statementArray.length - 1);
+  let statement = statementArray[rando];
+  let endChar = statement[statement.length - 1];
+  if (!noPunc && endChar !== '.' && endChar !== '!') {
+    statement += '.';
+  }  
+  return statement;
+}
+export const getQuestion = () => {
+  let questionArray = generator.lines.filter(line => line[line.length - 1] === '?' && line.length < 36);
+  let rando = randomInt(0, questionArray.length - 1);
+  let question = questionArray[rando];
+  return question;
+}
+export const getAnswer = () => {
+  let answerArray = generator.lines.filter(line => line[line.length - 1] !== '?' && line.length < 48);
+  let rando = randomInt(0, answerArray.length - 1);
+  let answer = answerArray[rando];
+  let endChar = answer[answer.length - 1];
+  if (endChar !== '.' && endChar !== '!') {
+    answer += '.';
+  }
+  return answer;
+}
 export const getParagraph = lineArgs => {
   let paragraph = '';
   lineArgs.map(args => {

@@ -50,12 +50,12 @@ export class TouchHandler {
       'swipe': {
         'north': {
           // 'distance': -30,
-          'distance': -12,
+          'distance': -20,
           // 'duration': 100
           'duration': 100
         },
         'south': {
-          'distance': 12,
+          'distance': 20,
           'duration': 100
         },
         // 'west': {
@@ -76,10 +76,10 @@ export class TouchHandler {
         // // console.green("DOWN");
       },
       // 'west': function () {
-      //   // // console.green("LEFT");
+      //   console.green("LEFT");
       // },
       // 'east': function () {
-      //   // // console.green("RIGHT");
+      //   console.green("RIGHT");
       // },
       // 'northwest': function () {
       //   // // console.green("UP-LEFT");

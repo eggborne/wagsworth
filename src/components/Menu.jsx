@@ -1,11 +1,13 @@
 import React from 'react';
 import styled from 'styled-components/macro';
+import Footer from './Footer';
 require('console-green');
 
 const MenuContainer = styled.header`
   --menu-height: calc(${window.innerHeight}px - var(--header-height));
   --menu-footer-height: calc(var(--header-height) * 1.25);
-  --nav-item-height: calc((var(--menu-height) - var(--menu-footer-height) - 18vh) / ${props => props.sections.length});
+  /* --nav-item-height: calc((var(--menu-height) - var(--menu-footer-height) - 18vh) / ${props => props.sections.length}); */
+  --nav-item-height: calc(var(--menu-height) / 12);
   background-color: var(--header-color);
   padding: 0;
   position: fixed;
@@ -17,102 +19,70 @@ const MenuContainer = styled.header`
   color: #ddd;
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 1fr var(--menu-footer-height);
+  grid-template-rows: 1fr var(--footer-height);
   justify-items: center;
   pointer-events: ${props => (props.showing ? 'all' : 'none')};
   opacity: ${props => props.showing ? 1 : 0};
-  transition: opacity 310ms ease, transform 420ms ease;
+  transition: opacity 300ms ease, transform 420ms ease;
   z-index: 5;
 `;
 const NavGroup = styled.div`
-  align-self: center;
+  align-self: stretch;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  max-height: 62vh;
-  `;
-const NavItem = styled.nav`
+  justify-content: center;
+`;
+
+const BoneButton = styled.nav`
   border-radius: 2vw;
-  font-size: calc(var(--nav-item-height) / 2.25);
+  font-size: calc(var(--nav-item-height) / 2.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 55vw;
-  flex-basis: var(--nav-item-height);
+  width: calc(var(--nav-item-height) * 2.25);
+  height: var(--nav-item-height);
   transform: translateX(-10%);
   margin: 1vh;
   transform: ${props => props.showing ? 'translateX(0)' : 'translateX(-10%)'};
   transition: transform 420ms ease, opacity 420ms ease;
-  ${props => (props.selected ?
-    `
-  background-color: var(--action-color-dark);
-  background-image: none;
-  box-shadow: none;
-  border: 0.2vw inset #444,
+  margin: calc(var(--nav-item-height) / 2.4);
+  /* filter: drop-shadow(0px 0px 3px #00000055); */
 
-  `
-  :
-  `
-  background-color: var(--button-color);
-  background-image: var(--button-gradient);
-  box-shadow: var(--button-shadow);
-  `
-  )}
-  & :nth-child(even) {
+  & :nth-of-type(2n) {
     transform: ${props => props.showing ? 'translateX(0)' : 'translateX(10%)'};
   }
-  `;
-
-  const MenuFooter = styled.footer`
-  align-self: stretch;
-  font-family: var(--main-font), sans-serif;
-  width: 100%;
-  // height: var(--menu-footer-height);
-  color: #ddd;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  white-space: pre;
-  // background: lightgreen;
-  & a {
-    color: #ddd;
-  }
 `;
-const SocialIcons = styled.div`
-  // background: green;
-  font-size: calc(var(--header-height) / 2.2);
-  display: flex;
-  align-items: center;
-  & > a > img {
-    padding: 2vmin;
-    padding-bottom: 0;
-    height: calc(var(--header-height) / 1.75);
-    animation:wave 1200ms infinite ease;
-    // animation-direction: alternate;
-    animation-play-state: ${props => props.showing ? 'playing' : 'paused'}
+const BoneKnob = styled.div`{
+  position: absolute;
+  width: calc(var(--nav-item-height) / 1.2);
+  height: calc(var(--nav-item-height) / 1.2);
+  border-radius: 50%;
+  background: inherit;
+  z-index: -1;
+  pointer-events: none;
+
+  &:first-of-type {
+    top: -25%;
+    left: -10%;
   }
-  & > a > #fb {
-    animation-delay: 200ms !important;
+  &:nth-of-type(2) {
+    bottom: -25%;
+    left: -10%;
   }
-  & > a > #insta {
-    animation-delay: 400ms !important;
+  &:nth-of-type(3) {
+    bottom: -25%;
+    right: -10%;
   }
-  & > a > #twit {
-    animation-delay: 600ms;
+  &:nth-of-type(4) {
+    top: -25%;
+    right: -10%;
   }
-  & > a > #pint {
-    animation-delay: 800ms;
-  }
+}
 `;
 
-const facebookIcon = require(`../assets/icons/facebookicon.png`);
-const instagramIcon = require(`../assets/icons/instagramicon.png`);
-const twittericon = require(`../assets/icons/twittericon.png`);
-const pinteresticon = require(`../assets/icons/pinteresticon.png`);
 function Menu(props) {
-  // console.count('Menu');
+  console.log('Menu', props.showing, props.sections);
   const handleNavItemClick = (event) => {
     props.onNavItemClick(parseInt(event.target.id));
   }
@@ -120,23 +90,25 @@ function Menu(props) {
     <MenuContainer sections={props.sections} showing={props.showing} phase={props.phase}>
       <NavGroup>
         {props.sections.map((section, i) =>
-          <NavItem id={i+1} showing={props.showing} key={section.title} onTouchStart={handleNavItemClick} selected={props.phase === i+1}>{section.title}</NavItem>
+          <BoneButton style={{ backgroundColor: section.style.backgroundColor, color: section.style.color }} id={i+1} showing={props.showing} key={section.title} 
+          {...{ [window.CLICK_METHOD]: handleNavItemClick }}
+          // onPointerDown={handleNavItemClick} 
+          selected={props.phase === i+1}>
+            {section.title}
+            <BoneKnob />
+            <BoneKnob />
+            <BoneKnob />
+            <BoneKnob />
+          </BoneButton>
         )}
       </NavGroup>
-      <MenuFooter>
-        <SocialIcons showing={props.showing}>
-            <a href='https://www.facebook.com/Wagsworth-Grooming-367796550610944' target='blank'><img id='fb' src={facebookIcon} /></a>
-            <a href='https://instagram.com/wagsworths' target='blank'><img id='insta' src={instagramIcon} /></a>
-            <a href='https://twitter.com/wagsworths' target='blank'><img id='twit' src={twittericon} /></a>
-            <a href='https://pinterest.com/wagsworths' target='blank'><img id='pint' src={pinteresticon} /></a>
-        </SocialIcons>
-      </MenuFooter>
+      <Footer showing={props.showing}/>
     </MenuContainer>
   )
 }
 function areEqual(prevProps, nextProps) {
   let equal = prevProps.showing === nextProps.showing
-    // && (prevProps.phase === nextProps.phase);
+    && (prevProps.sections === nextProps.sections);
   return equal;
 }
 // export default Menu;

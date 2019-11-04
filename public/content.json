@@ -1,0 +1,175 @@
+{
+  "sections": [
+    {
+      "title": "intro",
+      "headline": "Professional dog grooming in Lake Oswego, OR",
+      "legend": "",
+      "blackLogo": false,
+      "style": {
+        "color": "#ed1a1a",
+        "backgroundColor": "#0d0c05"
+      },
+      "slides": []
+    },
+    {
+      "title": "Services",
+      "note": "Prices for baths and haircuts will vary depending on the breed and type of coat. Two dogs of the same breed might be different prices based on the condition of the coat alone, but you are always welcome to call for an estimation.",
+      "fancyBorder": true,
+      "style": {
+        "titleFont": "Berkshire Swash",
+        "mainFont": "Open Sans",
+        "color": "#1a0a0d",
+        "backgroundColor": "#a6b6b0"
+      },
+      "centerImages": ["scissors"],
+      "pricedServices": [
+        {"name": "Nail Trim", "price": "$5 - $20"},
+        {"name": "Ear Cleaning", "price": "$15"},
+        {"name": "Foot Trim", "price": "$20"},
+        {"name": "Hugs and Kisses", "price": "Free"}
+      ],
+      "slides": [
+        {
+          "headline": "Full Groom",
+          "lowerText": [
+            "All full grooms include a thorough bath, blow dry, brush out, nail trim and haircut of your choice.",
+            "Your dog deserves the best product to make their coat look shiny and healthy. I only use high quality shampoos and conditioners that nourish and moisturize the skin and coat."
+          ],
+          "bullets": [
+            
+          ],
+          "images": {
+            "center": "scissors.png"
+          },
+          "bgColor": "#d6c8ae"
+        },
+        {
+          "headline": "Bath and Brush",
+          "lowerText": [
+            "Bath services include everything in the full groom services, minus the haircut.",
+            "I will, however, trim the face, feet and sanitary area if it is needed. This way, your pup can still have the freshly groomed look without shortening their length.",
+            "This is a great service for maintenance in between haircuts."
+          ],
+          "bullets": [
+            
+          ],
+          "images": {
+            "center": "bath.png"
+          },
+          "bgColor": "#b7b7e9"
+        }
+      ]
+    },
+    {
+      "title": "About Me",
+      "fancyBorder": true,
+      "lowerText": [
+        "Thank you for taking the time to look around my website!",
+        "I know that leaving your furry family member with someone isn’t easy, and the news can be full of horror stories, so I’d like to tell you a little more about me and why I love dog grooming.",
+        "I’m a second generation groomer and I’ve been grooming professionally since 2002. Prior to that, I began joining my Mom in her grooming studio when I was 10 years old. I loved getting to interact with so many different breeds! Giving soap mohawks to sudsy puppies are some of my favorite childhood memories, and those times led me to apprentice and later work in grooming shops all over the country.",       
+        "After working for others for so long, I have decided to branch out. I’ve developed Wagsworth’s to create an environment that I believe will be beneficial to your dog and will allow me to do my best work for them.",
+        "The best part of my day is seeing how happy my clients are when they see their dog, and how excited the dog gets when they’re showing off their fresh new haircut. The happier the client is, the happier the dog is!",            
+        "Creating lasting bonds with the dogs I work with is my highest priority. I want their time with me to feel safe and be as stress-free as possible.",
+        "Dog grooming can be physically tough, dirty work, that can stress out a dog, which is why employing a professional, experienced groomer is crucial.",
+        "I look forward to meeting you and your dog and forging a rapport of trust, compassion, and perfectly presented fur!"
+      ],
+      "style": {
+        "titleFont": "Berkshire Swash",
+        "mainFont": "Open Sans",
+        "color": "#2c2d59",
+        "backgroundColor": "#bda99d"
+      },
+      "slides": [
+        {
+          "headline": "",
+          "lowerText": [
+            "Thank you for taking the time to look around my website!",
+            "I know that leaving your furry family member with someone isn’t easy, and the news can be full of horror stories, so I’d like to tell you a little more about me and why I love dog grooming.",
+            "I’m a second generation groomer and I’ve been grooming professionally since 2002. Prior to that, I began joining my Mom in her grooming studio when I was 10 years old. I loved getting to interact with so many different breeds! Giving soap mohawks to sudsy puppies are some of my favorite childhood memories, and those times led me to apprentice and later work in grooming shops all over the country.",       
+            "After working for others for so long, I have decided to branch out. I’ve developed Wagsworth’s to create an environment that I believe will be beneficial to your dog and will allow me to do my best work for them.",
+            "The best part of my day is seeing how happy my clients are when they see their dog, and how excited the dog gets when they’re showing off their fresh new haircut. The happier the client is, the happier the dog is!",            
+            "Creating lasting bonds with the dogs I work with is my highest priority. I want their time with me to feel safe and be as stress-free as possible.",
+            "Dog grooming can be physically tough, dirty work, that can stress out a dog, which is why employing a professional, experienced groomer is crucial.",
+            "I look forward to meeting you and your dog and forging a rapport of trust, compassion, and perfectly presented fur!"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "FAQs",
+      "type": "faq",
+      "fancyBorder": true,
+      "style": {
+        "titleFont": "Berkshire Swash",
+        "mainFont": "Open Sans",
+        "color": "#160a24",
+        "backgroundColor": "#d9c2a5"
+      },
+      "slides": [{}]
+    },
+    {
+      "title": "Contact",
+      "fancyBorder": true,
+      "style": {
+        "titleFont": "Berkshire Swash",
+        "mainFont": "Open Sans",
+        "color": "#f0e1d1",
+        "backgroundColor": "#2d263d"
+      },
+      "slides": [
+        {
+          "headline": "",
+          "lowerText": [],
+          "images": {
+            
+          }
+        }
+      ]
+    }
+  ],
+  "faqs": [
+    {
+      "question": ["How often should I get my dog groomed?"],
+      "answer": [
+        "Depending on your dog's coat type, you should aim between 5-8 weeks. Softer coats (poodle, maltese, shih-tzu, bichon, etc.) should be maintained closer to the 4-5 week mark, whereas shorter and coarser coats can be stretched toward 6-8 weeks.",
+        "A regular maintenance schedule will keep your pup's coat and skin healthy and shiny!"
+      ]
+    },
+    {
+      "question": ["How long will the groom take?"],
+      "answer": [
+        "Expect them to be with me for 2.5-4 hours. Smaller dogs would be closer to 2.5-3 hours and larger dogs will be 3-4 hours. Times may vary."
+      ]
+    },
+    {
+      "question": ["Is it ok to bathe my dog myself in between grooms?"],
+      "answer": [
+        "I would not recommend bathing soft coated dogs between grooms. Without proper drying and brushing, you can risk matting which could unfortunately result in shaving. If you absolutely have to bathe between grooms (mud and dirt happens), then be sure to dry and brush thoroughly after the bath."
+      ]
+    },
+    {
+      "question": [
+        "What age to should I start bringing my puppy in for grooming?"
+      ],
+      "answer": [
+        "Starting them as young as 10-12 weeks is a great time to start grooming. Bringing them in at an early age while keeping a consistent schedule will ease them into the process and will create a more positive experience for them in the future."
+      ]
+    },
+    {
+      "question": ["Can I stay with my dog and watch?"],
+      "answer": [
+        "This is a common concern among many dog owners. Unfortunately, I do not let owners stay during the groom. This is not only a safety matter, but dogs will generally respond to the grooming process much better when the owner is not around. Creating a trusting relationship is a very important step between you and your groomer. Make sure you're comfortable enough with them to ask questions and keep an open and honest dialogue."
+      ]
+    }
+  ],
+  "fonts": {
+    "mainFont": {
+      "fontFamily": "Quicksand",
+      "fontSize": "1rem"
+    },
+    "titleFont": {
+      "fontFamily": "Berkshire Swash",
+      "fontSize": "1.25rem"
+    }
+  }
+}

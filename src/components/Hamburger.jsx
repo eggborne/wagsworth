@@ -3,15 +3,16 @@ import styled from 'styled-components/macro';
 require('console-green');
 
 const HamburgerContainer = styled.div`
-  --hamburger-height: calc(var(--header-height) * 0.75);
   position: absolute;
+  /* background: blue; */
   z-index: 12;
-  top: calc(var(--hamburger-height) * 0.175);
-  right: calc((var(--header-height) - (var(--header-height) * 0.75)) / 2);
+  padding: 0;
+  /* padding-top: calc(var(--hamburger-height) * 0.175); */
+  right: 0;
   width: var(--hamburger-height);
   height: var(--hamburger-height);
   justify-self: center;
-  display: ${props => props.showing ? 'flex' : 'none'};
+  display: flex;
   flex-direction: column;
   justify-content: space-around;
   transform: ${props => props.landed ? 'none' : 'translateY(-10%)'};
@@ -19,6 +20,19 @@ const HamburgerContainer = styled.div`
   transition: transform 420ms ease, opacity 420ms ease;
   transition-delay: 900ms;
   padding: calc(var(--header-height) * 0.175);
+  margin: calc(var(--header-height) * 0.075);
+  margin-top: calc(var(--header-height) * 0.03);
+  z-index: 6;
+
+  &::after {
+    position: absolute;
+    content: 'MENU';
+    color: #ddd;
+    font-size: calc(var(--header-height) / 6);
+    transform: translateX(-50%);
+    left: 50%;
+    bottom: calc(var(--header-height) / -12);
+  }
 `;
 // const ScissorArm = styled.img`
 //   position: absolute;
@@ -51,13 +65,12 @@ const HamBarMid = styled(HamBar)`
 const HamBarBot = styled(HamBar)`
   border: none;
   transform: ${props => props.menuOn ? 'translateX(15%)' : 'none'};
-
 `;
 
 function Hamburger(props) {
   // console.count('Hamburger');
   return (
-      <HamburgerContainer onTouchStart={props.onHamburgerClick} showing={!props.landscape} landed={props.landed}>
+      <HamburgerContainer {...{ [window.CLICK_METHOD]: props.onHamburgerClick }} showing={!props.landscape} landed={props.landed}>
         <>
           <HamBarTop menuOn={props.menuOn} ></HamBarTop>
           <HamBarMid menuOn={props.menuOn} ></HamBarMid>

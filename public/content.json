@@ -23,8 +23,7 @@
       },
       "centerImages": ["scissors"],
       "pricedServices": [
-        {"name": "Nail Trim", "price": "$5 - $20"},
-        {"name": "Ear Cleaning", "price": "$15"},
+        {"name": "Nail Trim", "price": "$15"},
         {"name": "Foot Trim", "price": "$20"},
         {"name": "Hugs and Kisses", "price": "Free"}
       ],
@@ -76,7 +75,7 @@
       "style": {
         "titleFont": "Berkshire Swash",
         "mainFont": "Open Sans",
-        "color": "#2c2d59",
+        "color": "#221a22",
         "backgroundColor": "#bda99d"
       },
       "slides": [
@@ -113,8 +112,8 @@
       "style": {
         "titleFont": "Berkshire Swash",
         "mainFont": "Open Sans",
-        "color": "#f0e1d1",
-        "backgroundColor": "#2d263d"
+        "color": "#1d130c",
+        "backgroundColor": "#b4afc0"
       },
       "slides": [
         {

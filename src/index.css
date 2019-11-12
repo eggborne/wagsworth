@@ -43,6 +43,8 @@
   /*  */
   --paper-margin: 2vh;
   --paper-height: calc(var(--section-height) - var(--paper-margin));
+  --card-radius: 0.25rem;
+
 }
 * {
   box-sizing: border-box;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components/macro";
 import "./ScrollPanel.css";
 
@@ -7,9 +7,14 @@ let shiftSpeed = 420;
 
 const borderUrl = "https://wagsworthgrooming.com/fancybordersmall.png";
 
+const googleMapHTML = `<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2801.544366522556!2d-122.7430284839197!3d45.39836124585416!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x549572e65fe21c41%3A0x419967e7f5602b9c!2sThe%20Scooby%20Shack!5e0!3m2!1sen!2sus!4v1573525146909!5m2!1sen!2sus" frameborder="0" style="border:0;" allowfullscreen="" ></iframe>`
+
+const phoneIcon = require('../assets/icons/phoneicon.png');
+const emailIcon = require('../assets/icons/emailicon.png');
+
 const SectionContainer = styled.section`
   --section-header-height: calc(var(--header-height) * 1.25); 
-  --section-footer-height: calc(var(--header-height) * 1.25); 
+  --section-footer-height: ${props => props.title === 'Contact' ? `calc(var(--footer-height) + calc((var(--header-height) * 1.25) / 1.5))` : `calc(var(--header-height) * 1.25)`}; 
   box-sizing: content-box;
   position: relative;
   width: 100%;  
@@ -98,52 +103,6 @@ const FadeEdge = styled.div`
     display: none;
   }
 `;
-const ServiceCard = styled.div`
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: min-content 1fr;
-  padding: calc(var(--section-height) / 18);
-  padding-top: calc(var(--section-height) / 24);
-  grid-row-gap: calc(var(--section-height) / 24);
-  border-radius: 0.2rem;
-  box-shadow: 0 0.2rem 0.5em #00000066, 0 0px 0 1px #00000066;
-
-  & > .card-top {
-    grid-column-end: span 2;
-    justify-self: stretch;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  & > .card-top > .card-headline {
-    padding: 0;
-    margin: 0;
-    display: unset;
-    width: auto;
-  }
-
-  & .card-body {
-    justify-self: stretch;
-  }
-
-  & .card-top img {
-    height: calc(var(--section-height) / 10);
-    width: calc(var(--section-height) / 10);
-    /* justify-self: start; */
-  }
-
-  & > summary {
-    grid-column-end: span 2;
-  }
-
-  @media screen and (orientation: landscape) {
-    height: calc(var(--section-height) / 2);
-    min-height: calc(var(--section-height) / 2);
-    max-width: calc(var(--section-height) / 2);
-  }
-`;
 const SectionTitle = styled.header`
   grid-column-start: 0;
   grid-column-end: span 3;
@@ -214,7 +173,7 @@ const BodyScrollContainer = styled.div`
     var(--section-height) - var(--section-header-height) -
       var(--section-footer-height)
   );
-  transition: transform 400ms ease;
+  /* transition: transform 1400ms ease; */
   pointer-events: all;
   overflow-y: auto;
 
@@ -245,19 +204,67 @@ const SectionBody = styled.div`
 
   & > .service-note {
     font-size: 1rem;
-    padding: calc(var(--header-height) / 4);
-    border-radius: calc(var(--header-height) / 4);
+    padding: 1rem;
+    border-radius: var(--card-radius);
     font-family: var(--main-font);
     width: 100%;
     margin-top: calc(var(--header-height) / 2);
-    background-color: #584f4f8a;
-    color: white;
-    text-shadow: 1px 1px 1px #000000aa;
-    box-shadow: 0 0.2rem 0.5em #00000066, 0 0px 0 1px #00000066;
+    background-color: #ffffff66;
+    color: black;
+    /* text-shadow: 1px 1px 1px #000000aa */
+    ;
+    border: 1px solid #00000066;
+    /* box-shadow: 0 0.2rem 0.25em #00000066, 0 0px 0 1px #00000066; */
   }
 
   @media screen and (orientation: landscape) {
     padding: 2vh 4vw;
+  }
+`;
+const ServiceCard = styled.div`
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: min-content 1fr;
+  padding: 8vmin;
+  padding-top: calc(var(--section-height) / 24);
+  grid-row-gap: calc(var(--section-height) / 24);
+  border-radius: var(--card-radius);
+  box-shadow: 0 0.2rem 0.25em #00000066, 0 0px 0 1px #00000066;
+
+  & > .card-top {
+    grid-column-end: span 2;
+    justify-self: stretch;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  & > .card-top > .card-headline {
+    padding: 0;
+    margin: 0;
+    display: unset;
+    width: auto;
+  }
+
+  & .card-body {
+    justify-self: stretch;
+  }
+
+  & .card-top img {
+    height: calc(var(--section-height) / 10);
+    width: calc(var(--section-height) / 10);
+    /* justify-self: start; */
+  }
+
+  & > summary {
+    grid-column-end: span 2;
+  }
+
+  @media screen and (orientation: landscape) {
+    height: calc(var(--section-height) / 2);
+    min-height: calc(var(--section-height) / 2);
+    max-width: calc(var(--section-height) / 2);
   }
 `;
 const TextBody = styled.div`
@@ -293,19 +300,78 @@ const ServiceTable = styled(ServiceCard)`
   flex-direction: column;
   align-items: stretch;
   justify-content: center;
-  background-color: none;
   box-shadow: none;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
+  font-family: var(--main-font);
+  line-height: 1.5;  
   
   & > div {
     display: flex;
     justify-content: space-between;
     padding: var(--main-padding);
+    font-weight: bold;
   }
   & >div > div:last-child {
-    font-family: var(--main-font);
   }
 `;
+
+const ContactTable = styled.div`
+position: relative;
+  font-family: var(--main-font);
+  font-weight: bold;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 
+    auto
+    auto
+    auto
+    1fr
+  ;
+  width: 70vmin;
+  height: 100%;
+  pointer-events: all;
+
+  & * {
+    pointer-events: all;    
+  }
+  & > .contact-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1vh;
+    border-radius: var(--card-radius);
+    width: 100%;
+  }
+  & .contact-value {
+    text-align: right;
+  }
+  & .address {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    margin-top: 0.5vh;
+  }
+  & .phone-number {
+    font-size: 1.5rem;
+  }
+  & .google-map {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--card-radius);
+    margin-top: 1vh;
+    border: 1px solid #000000aa;
+    border-radius: var(--card-radius) !important;
+  }
+  & .google-map > iframe {
+    /* width: 100%; */
+    height: 100%;
+    box-shadow: 0 0 2px #000000aa;
+    border-radius: var(--card-radius) !important;
+    /* height: calc(var(--paper-height) / 2);     */
+  }
+
+`
 const DotDisplay = styled.div`
   display: flex;
   align-items: center;
@@ -426,8 +492,15 @@ function ScrollPanel(props) {
   const [arrived, setArrival] = useState(false);
   const [transition, setTransition] = useState("in");
   const [slideShowing, setSlide] = useState(0);
+  const mapRef = useRef();
   let sectionTitle = props.title;
   // console.count('panel ' + sectionTitle + ' slideShowing ' + slideShowing)
+  // useEffect(() => {
+  //   if (props.sectionData.title === 'Contact') {
+  //     console.warn('Contact useEffect fired.', mapRef)
+  //     mapRef.current.innerHTML = googleMapHTML;
+  //   }
+  // }, [])
   useEffect(() => {
     if (props.phase === props.index) {
       setTransition("in");
@@ -464,6 +537,7 @@ function ScrollPanel(props) {
     sectionTitle === "About Me";
   return (
     <SectionContainer
+      title={props.sectionData.title}
       fadeEdges={fadeEdges}
       style={props.style}
       className={containerClass}
@@ -526,13 +600,46 @@ function ScrollPanel(props) {
                 </SectionText>
               </ServiceCard>        
             </SectionBody>
+          ) : props.sectionData.title === "Contact" ? (
+            <ContactTable>
+              <div className='contact-row'>
+              <div className='contact-label'>
+                Phone:
+              </div>              
+              <div className='contact-value phone-number'>
+                <a href='tel:+1-971-284-0998'>
+                  (971) 284-0998
+                </a>
+              </div>
+              </div>
+              
+              <div className='contact-row'>
+              <div className='contact-label'>
+                Email:
+              </div>
+              <div className='contact-value'>
+              <a href='mailto:booking@wagsworthgrooming.com'>
+                booking@<br />wagsworthgrooming.com
+              </a>
+              </div>
+              </div>
+
+              <div className='contact-row address'>
+                <div>Located inside Scooby Shack</div>
+                <div>17620 63rd Ave.</div>
+                <div>Lake Oswego, OR 97035</div>
+              </div>
+              <div ref={mapRef} className='google-map'>
+                MAP GO HERE
+              </div>
+            </ContactTable>
           ) : (
             <SectionBody showing={true} key={i}>
               {slide.headline && (
                 <SectionHeadline arrived={arrived}>
                   {slide.headline}
                 </SectionHeadline>
-              )}
+              )}              
               {slide.images && (
                 <FadeImage arrived={arrived} src={slide.images.center} />
               )}
@@ -551,13 +658,13 @@ function ScrollPanel(props) {
           </div>
           <ServiceTable>
             {props.sectionData.pricedServices.map(service => 
-              <div key={service.name}>  
+              <div key={service.name}>
                 <div>{service.name}</div>
                 <div>{service.price}</div>
               </div>
             )}
           </ServiceTable>
-          <div className='service-note'>
+          <div style={{ color: props.sectionData.style.color }} className='service-note'>
             <span style={{ fontWeight: 'bold' }}>Note: </span>{props.sectionData.note}
           </div>
         </SectionBody>

@@ -232,8 +232,8 @@ function Header(props) {
       </LogoContainer>
       <a href='tel:+1-971-284-0998'>
         <PhoneNumber showing={props.landed} collapsed={props.collapsed}>
-          <div>971-284-0998</div>
-          <div><img src={phoneIcon} /></div>
+          <div>(971) 284-0998</div>
+          <div><img alt='' src={phoneIcon} /></div>
         </PhoneNumber>
       </a>
       <a href='mailto:booking@wagsworthgrooming.com'>

@@ -25,16 +25,13 @@ class Touch {
     let distance = this.getDistance();
     if (distance.y <= this.handler.gestures.swipe.north.distance && duration <= this.handler.gestures.swipe.north.duration) {
       fullSwipe += "north";
-    }
-    if (distance.y >= this.handler.gestures.swipe.south.distance && duration <= this.handler.gestures.swipe.south.duration) {
+    } else if (distance.y >= this.handler.gestures.swipe.south.distance && duration <= this.handler.gestures.swipe.south.duration) {
       fullSwipe += "south";
+    } else if (distance.x <= this.handler.gestures.swipe.west.distance && duration <= this.handler.gestures.swipe.west.duration) {
+      fullSwipe += "west";
+    } else if (distance.x >= this.handler.gestures.swipe.east.distance && duration <= this.handler.gestures.swipe.east.duration) {
+      fullSwipe += "east";
     }
-    // if (distance.x <= this.handler.gestures.swipe.west.distance && duration <= this.handler.gestures.swipe.west.duration) {
-    //   fullSwipe += "west";
-    // }
-    // if (distance.x >= this.handler.gestures.swipe.east.distance && duration <= this.handler.gestures.swipe.east.duration) {
-    //   fullSwipe += "east";
-    // }
     return fullSwipe;
   }
 }
@@ -58,29 +55,29 @@ export class TouchHandler {
           'distance': 20,
           'duration': 100
         },
-        // 'west': {
-        //   'distance': -40,
-        //   'duration': 100
-        // },
-        // 'east': {
-        //   'distance': 40,
-        //   'duration': 100
-        // }
+        'west': {
+          'distance': -40,
+          'duration': 100
+        },
+        'east': {
+          'distance': 40,
+          'duration': 100
+        }
       }
     };
     this.swipeActions = {
-      'north': function () {
+      'north': function() {
         // // console.green("UP");
       },
-      'south': function () {
+      'south': function() {
         // // console.green("DOWN");
       },
-      // 'west': function () {
-      //   console.green("LEFT");
-      // },
-      // 'east': function () {
-      //   console.green("RIGHT");
-      // },
+      'west': function() {
+        console.green("LEFT");
+      },
+      'east': function() {
+        console.green("RIGHT");
+      },
       // 'northwest': function () {
       //   // // console.green("UP-LEFT");
       // },
@@ -120,7 +117,7 @@ export class TouchHandler {
           // check if it has completed a swipe
           var swiped = this.currentTouches[j].getSwipe();
           if (swiped && (window.performance.now() - lastSwiped) > 500) {
-            this.swipeActions[swiped]();
+            this.swipeActions[swiped](event);
             lastSwiped = window.performance.now();
           }
         }

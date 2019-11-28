@@ -4,9 +4,8 @@ import Footer from './Footer';
 require('console-green');
 
 const MenuContainer = styled.header`
-  --menu-height: calc(${window.innerHeight}px - var(--header-height));
+  --menu-height: calc(var(--view-height) - var(--header-height));
   --menu-footer-height: calc(var(--header-height) * 1.25);
-  /* --nav-item-height: calc((var(--menu-height) - var(--menu-footer-height) - 18vh) / ${props => props.sections.length}); */
   --nav-item-height: calc(var(--menu-height) / 12);
   background-color: var(--header-color);
   padding: 0;
@@ -24,7 +23,11 @@ const MenuContainer = styled.header`
   pointer-events: ${props => (props.showing ? 'all' : 'none')};
   opacity: ${props => props.showing ? 1 : 0};
   transition: opacity 300ms ease, transform 420ms ease;
-  z-index: 5;
+  z-index: 2;
+
+  & footer {
+    box-shadow: none;
+  }
 `;
 const NavGroup = styled.div`
   align-self: stretch;
@@ -47,7 +50,7 @@ const BoneButton = styled.nav`
   transform: ${props => props.showing ? 'translateX(0)' : 'translateX(-10%)'};
   transition: transform 420ms ease, opacity 420ms ease;
   margin: calc(var(--nav-item-height) / 2.4);
-  /* filter: drop-shadow(0px 0px 3px #00000055); */
+  filter: drop-shadow(0px 0px 0.25em #00000099);
 
   & :nth-of-type(2n) {
     transform: ${props => props.showing ? 'translateX(0)' : 'translateX(10%)'};
@@ -102,13 +105,13 @@ function Menu(props) {
           </BoneButton>
         )}
       </NavGroup>
-      <Footer showing={props.showing}/>
+      {!window.IS_LANDSCAPE && <Footer showing={props.showing}/>}
     </MenuContainer>
   )
 }
 function areEqual(prevProps, nextProps) {
   let equal = prevProps.showing === nextProps.showing
-    && (prevProps.sections === nextProps.sections);
+    // && (prevProps.sections === nextProps.sections);
   return equal;
 }
 // export default Menu;

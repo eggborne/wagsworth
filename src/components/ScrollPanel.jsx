@@ -7,19 +7,16 @@ let shiftSpeed = 420;
 
 const borderUrl = "https://wagsworthgrooming.com/fancybordersmall.png";
 
-const googleMapHTML = `<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2801.544366522556!2d-122.7430284839197!3d45.39836124585416!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x549572e65fe21c41%3A0x419967e7f5602b9c!2sThe%20Scooby%20Shack!5e0!3m2!1sen!2sus!4v1573525146909!5m2!1sen!2sus" frameborder="0" style="border:0;" allowfullscreen="" ></iframe>`
+// const googleMapHTML = `<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2801.544366522556!2d-122.7430284839197!3d45.39836124585416!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x549572e65fe21c41%3A0x419967e7f5602b9c!2sThe%20Scooby%20Shack!5e0!3m2!1sen!2sus!4v1573525146909!5m2!1sen!2sus" frameborder="0" style="border:0;" allowfullscreen="" ></iframe>`
 
-const phoneIcon = require('../assets/icons/phoneicon.png');
-const emailIcon = require('../assets/icons/emailicon.png');
+// const phoneIcon = require('../assets/icons/phoneicon.png');
+// const emailIcon = require('../assets/icons/emailicon.png');
 
 const SectionContainer = styled.section`
-  --section-header-height: calc(var(--header-height) * 1.25); 
-  --section-footer-height: ${props => props.title === 'Contact' ? `calc(var(--footer-height) + calc((var(--header-height) * 1.25) / 1.5))` : `calc(var(--header-height) * 1.25)`}; 
   box-sizing: content-box;
+  width: 100%;
   position: relative;
-  width: 100%;  
-  /* height: var(--section-height); */
-  min-height: var(--section-height);
+  height: var(--section-height);
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 
@@ -27,20 +24,16 @@ const SectionContainer = styled.section`
     auto 
     var(--section-footer-height)
   ;
-  grid-template-columns: var(--header-height) 1fr var(--header-height);
+  /* grid-template-columns: var(--header-height) 1fr var(--header-height); */
   justify-items: center;
   align-items: center;
   font-size: var(--main-font-size);
   color: #ddd;
   font-family: var(--title-font);
-  /* background: linear-gradient(rgba(0,0,0,0.2), rgba(255,255,255,0),  rgba(255,255,255,0),  rgba(255,255,255,0), rgba(0,0,0,0.2)); */
-  /* outline: 2px solid blue; */
-  /* transform: scale(0.98);   */
 
   overflow: hidden;
 
   &:last-of-type {
-    min-height: unset;
     height: calc(var(--section-height) - var(--footer-height));
   }
   & * {
@@ -49,13 +42,17 @@ const SectionContainer = styled.section`
   & > div {
     grid-column-start: 0;
     grid-column-end: span 3;
-  }  
+  }
+
+  & .service-icon {
+    ${props => props.style.iconFilters};
+  }
 
   &::before {
     box-sizing: border-box;
     position: absolute;
     top: calc(var(--paper-margin) / 2);
-    width: calc(100% - var(--paper-margin));
+    width: calc(var(--main-width) - var(--paper-margin));
     height: calc(100% - var(--paper-margin));
     content: '';
     border-style: solid;
@@ -64,26 +61,43 @@ const SectionContainer = styled.section`
     border-image-source: url(${borderUrl});
     border-image-slice: 50%;
     border-image-width: calc(var(--header-height) * 1.5);
-    opacity: 0.8;
     z-index: 1;
     pointer-events: none;
+    ${props => props.style.fancyBorderFilters}
   }
-  /* &::after {
-    position: absolute;
-    content: '';
-    width: 100%;
-    height: calc(var(--header-height) * 0.65);
-    bottom: calc(var(--header-height) * 1.25);
-    background-image: linear-gradient(rgba(255,255,255,0), ${props =>
-      props.style.backgroundColor});
-    z-index: 0;
-    display: ${props => (props.fadeEdges ? "initial" : "none")};
-    background-image: linear-gradient(rgba(255,255,255,0), brown);
-  } */
+  @media screen and (orientation: landscape) {
+
+    &:last-of-type {
+      height: var(--section-height);      
+      grid-template-rows: 
+        var(--section-header-height)
+        auto 
+        calc(var(--footer-height) * 1.5);
+      ;
+    }
+    &::before {
+      height: calc(100% - var(--paper-margin) - var(--footer-height));
+    }
+
+  }
+`;
+const BodyScrollContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: calc(
+    var(--section-height) - var(--section-header-height) - var(--section-footer-height)
+    );
+  pointer-events: all;
+  overflow-y: auto;
+    
+  @media screen and (orientation: landscape) {
+    align-items: center;
+    max-width: 100%;
+  }
 `;
 const FadeEdge = styled.div`
   position: absolute;
-  width: calc(100% - (var(--header-height) * 1));
+  width: calc(var(--main-width) - (var(--header-height) * 1.25));
   height: calc(var(--header-height) * 0.5);
   top: calc(var(--section-header-height) - 2px);
   background-image: linear-gradient(
@@ -94,13 +108,21 @@ const FadeEdge = styled.div`
   );
   z-index: 2;
 
+  /* display: none; */
+
   &.lower {
-    top: calc(100% - (var(--section-footer-height) - 2px));
     transform: translateY(-100%) rotate(180deg);
+    top: calc(100% - (var(--section-footer-height) - 2px));
   }
 
   @media screen and (orientation: landscape) {
-    display: none;
+    /* width: calc(var(--main-width) - (var(--header-height) * 3)); */
+    &.lower {
+      top: calc(100% - (var(--section-footer-height) - 2px));
+      /* transform: translateY(0) rotate(180deg); */
+      /* top: unset; */
+      /* bottom: 0; */
+    }
   }
 `;
 const SectionTitle = styled.header`
@@ -118,23 +140,9 @@ const SectionTitle = styled.header`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-shadow: 2px 2px 2vw #33333399;
+  /* text-shadow: 2px 2px 2vw #33333399; */
   transition: transform 800ms ease, opacity 800ms ease;
   transition-delay: calc(var(--shift-speed) / 2);
-
-  /* outline: 1px solid blue; */
-
-  /* & :after {
-    position: absolute;
-    content: '';
-    width: 100%;
-    height: calc(var(--header-height) * 0.65);
-    bottom: calc(var(--header-height) * 1.25);
-    background-image: linear-gradient(rgba(255,255,255,0), ${props =>
-      props.style.backgroundColor});
-    z-index: 0;
-    /* background-image: linear-gradient(rgba(255,255,255,0), brown); */
-  } */
 `;
 const SectionHeadline = styled.div`
   font-family: var(--main-font);
@@ -151,8 +159,8 @@ const SectionHeadline = styled.div`
   text-align: center;
   width: 80%;
   @media screen and (orientation: landscape) {
-    font-size: var(--main-font-size);
-    width: 50%;
+    /* font-size: var(--main-font-size); */
+    /* width: 50%; */
   }
 `;
 const CardHeadline = styled(SectionHeadline)`
@@ -162,30 +170,10 @@ const CardHeadline = styled(SectionHeadline)`
   @media screen and (orientation: landscape) {
   }
 `;
-const BodyScrollContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  /* justify-self: start; */
-  /* align-items: stretch; */
-  /* justify-content: flex-end; */
-  /* width: 100%; */
-  height: calc(
-    var(--section-height) - var(--section-header-height) -
-      var(--section-footer-height)
-  );
-  /* transition: transform 1400ms ease; */
-  pointer-events: all;
-  overflow-y: auto;
-
-  @media screen and (orientation: landscape) {
-    flex-direction: row;
-    padding: 2% 4%;
-  }
-`;
 const SectionBody = styled.div`
-  /* position: relative; */
-  padding: 5% 12%;
-  font-size: calc(var(--main-font-size) * 1.1);
+  padding: calc(var(--section-height) / 16) calc(var(--main-width) * 0.15);
+  width: var(--main-width);
+  /* font-size: calc(var(--main-font-size) * 1.1); */
   &.services {
     /* padding: 10% 12%; */
     padding-top: calc(var(--section-height) / 18);
@@ -198,7 +186,7 @@ const SectionBody = styled.div`
     font-size: 1.8rem;
     width: 100%;
     text-align: center;
-    text-shadow: 2px 2px 2vw #33333399;
+    /* text-shadow: 2px 2px 2vw #33333399; */
     padding-bottom: calc(var(--header-height) / 4);
   }
 
@@ -209,16 +197,22 @@ const SectionBody = styled.div`
     font-family: var(--main-font);
     width: 100%;
     margin-top: calc(var(--header-height) / 2);
-    background-color: #ffffff66;
+    background-color: #ffffff07;
     color: black;
     /* text-shadow: 1px 1px 1px #000000aa */
     ;
     border: 1px solid #00000066;
     /* box-shadow: 0 0.2rem 0.25em #00000066, 0 0px 0 1px #00000066; */
   }
-
+  
   @media screen and (orientation: landscape) {
-    padding: 2vh 4vw;
+    /* padding: calc(var(--section-height) / 16) calc((100vw - var(--main-width)) / 1.25); */
+    &.services {
+      /* width: 100%; */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
   }
 `;
 const ServiceCard = styled.div`
@@ -230,7 +224,7 @@ const ServiceCard = styled.div`
   padding-top: calc(var(--section-height) / 24);
   grid-row-gap: calc(var(--section-height) / 24);
   border-radius: var(--card-radius);
-  box-shadow: 0 0.2rem 0.25em #00000066, 0 0px 0 1px #00000066;
+  box-shadow: 0 0.1rem 0.25em #00000066, 0 0px 0 1px #00000066;
 
   & > .card-top {
     grid-column-end: span 2;
@@ -249,6 +243,7 @@ const ServiceCard = styled.div`
 
   & .card-body {
     justify-self: stretch;
+    padding: 0 !important;
   }
 
   & .card-top img {
@@ -262,21 +257,24 @@ const ServiceCard = styled.div`
   }
 
   @media screen and (orientation: landscape) {
-    height: calc(var(--section-height) / 2);
-    min-height: calc(var(--section-height) / 2);
-    max-width: calc(var(--section-height) / 2);
+    width: calc(var(--main-width) / 1.5);
+    align-self: center;
+    justify-self: center;
   }
 `;
 const TextBody = styled.div`
-  /* padding: 4vh 12vw; */
-  padding: 5% 12%;
+  padding: calc(var(--section-height) / 16) calc(var(--main-width) * 0.15);
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100vw;
+  width: var(--main-width);
   font-size: calc(var(--main-font-size) * 1.1);
   & > * {
     margin-top: 0;
+  }
+  
+  @media screen and (orientation: landscape) {
+    /* padding: calc(var(--section-height) / 16) calc(var(--main-width) * 0.15); */
   }
 `;
 const SectionText = styled.summary`
@@ -293,6 +291,10 @@ const SectionText = styled.summary`
 
   & > p {
     margin-top: 0;
+  }
+  @media screen and (orientation: landscape) {
+    /* padding-left: calc(var(--main-width) / 12);
+    padding-right: calc(var(--main-width) / 12); */
   }
 `;
 const ServiceTable = styled(ServiceCard)`
@@ -312,23 +314,18 @@ const ServiceTable = styled(ServiceCard)`
     font-weight: bold;
   }
   & >div > div:last-child {
+
   }
 `;
 
 const ContactTable = styled.div`
-position: relative;
+  /* position: relative; */
   font-family: var(--main-font);
   font-weight: bold;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 
-    auto
-    auto
-    auto
-    1fr
-  ;
+  display: flex;
+  flex-direction: column;
   width: 70vmin;
-  height: 100%;
+  height: calc(var(--section-height) - var(--section-header-height)  - var(--section-footer-height) / 1.5 - var(--footer-height));
   pointer-events: all;
 
   & * {
@@ -358,6 +355,7 @@ position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-grow: 1;
     border-radius: var(--card-radius);
     margin-top: 1vh;
     border: 1px solid #000000aa;
@@ -366,12 +364,16 @@ position: relative;
   & .google-map > iframe {
     /* width: 100%; */
     height: 100%;
-    box-shadow: 0 0 2px #000000aa;
+    /* box-shadow: 0 0 2px #000000aa; */
     border-radius: var(--card-radius) !important;
     /* height: calc(var(--paper-height) / 2);     */
   }
+  @media screen and (orientation: landscape) {
+    width: calc(var(--main-width) / 1.5);
+    height: 100%;
 
-`
+  }
+`;
 const DotDisplay = styled.div`
   display: flex;
   align-items: center;
@@ -399,14 +401,18 @@ const Dot = styled.div`
 `;
 const BottomPanel = styled.div`
   opacity: ${props => (swipeToScroll && props.arrived ? 1 : 0)};
-  width: 100%;
-  height: var(--section-header-height);
+  width: width: var(--main-width);
+  height: var(--section-footer-height);
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: ${swipeToScroll ? "all" : "none"};
   transition: opacity 600ms ease;
   z-index: 6;
+
+  @media screen and (orientation: landscape) {
+    margin-bottom: calc(var(--footer-height) * 1.25);
+  }
 `;
 const Arrow = styled.div`
   ${props => !props.arrived && `animation-play-state: paused !important;`}
@@ -417,14 +423,14 @@ const Arrow = styled.div`
   opacity: ${props => (props.arrived ? 0.86 : 0)};
   transition: opacity 1000ms ease;
   transition-delay: calc(var(--shift-speed) / 2);
-  filter: drop-shadow(0 0 2px #00000099);
+  filter: drop-shadow(0 0 1px #000000);
 `;
 const DownArrow = styled(Arrow)`
   position: relative;
   border-top: 2.2rem solid var(--arrow-color);
   animation: bob infinite 800ms linear alternate;
   & ::before {
-    width: max-content;
+    width: max-content;    
     font-size: 1rem;
     height: 1rem;
     position: absolute;
@@ -432,6 +438,13 @@ const DownArrow = styled(Arrow)`
     transform: translate(-50%, -100%);
     top: -1rem;
     left: 50%;
+    color: white;
+    text-shadow:
+      1px 1px 1px #00000099,
+      -1px 1px 1px #00000099,
+      1px -1px 1px #00000099,
+      -1px -1px 1px #00000099
+    ;       
   }
 `;
 const LeftArrowPanel = styled.div`
@@ -459,7 +472,7 @@ const FadeImage = styled.img`
   transition: opacity 800ms ease, transform 800ms ease;
   transition-delay: calc(var(--shift-speed) / 2);
   will-change: transform, opacity;
-  filter: drop-shadow(3px 3px 3px #00000055);
+  /* filter: drop-shadow(3px 3px 3px #00000055); */
 `;
 const QuestionSet = styled.div`
   position: relative;
@@ -521,20 +534,25 @@ function ScrollPanel(props) {
         }, shiftSpeed / 2);
       }
     };
-  }, [props.phase, props.index]);
+  }, [props.phase, props.index, props.sectionData.ref]);
   let leaving = transition === "out";
   let containerClass = "scroll-panel-container";
   if (leaving) {
     containerClass += " leaving";
-  } else if (Math.abs(props.lastPhase - props.phase) > 1) {
+  }
+  if (props.instant) {
     containerClass += " instant";
   }
-  console.log("panel", props.index, "run");
-  console.log(props.nextSectionTitle);
+  // } else if (Math.abs(props.lastPhase - props.phase) > 1) {
+  //   containerClass += " instant";
+  // }
   let fadeEdges =
-    sectionTitle === "Services" ||
-    sectionTitle === "FAQs" ||
-    sectionTitle === "About Me";
+  props.sectionData.pricedServices ||
+  props.sectionData.type === "faq" ||
+  sectionTitle === "About Me";
+
+  console.warn('panel', props.index)
+    
   return (
     <SectionContainer
       title={props.sectionData.title}
@@ -564,7 +582,7 @@ function ScrollPanel(props) {
         // style={{ transform: `translateX(${slideShowing * -window.innerWidth}px)` }}
         slides={props.slides}
       >
-        {props.slides.map((slide, i) =>
+        {props.slides && props.slides.map((slide, i) =>
           props.faq ? (
             <TextBody showing={true} key={"body" + i}>
               {props.faqs
@@ -580,12 +598,12 @@ function ScrollPanel(props) {
                   </QuestionSet>
                 ))}
             </TextBody>
-          ) : props.sectionData.title === "Services" ? (
+          ) : props.sectionData.pricedServices ? (
             <SectionBody className={"services"} showing={true} key={i}>              
                <ServiceCard style={{ backgroundColor: slide.bgColor }}>
                 <div className='card-top'>
                   {slide.images.center && (
-                    <FadeImage arrived={arrived} src={slide.images.center} />
+                    <FadeImage className='service-icon' arrived={arrived} src={slide.images.center} />
                   )}
                   {slide.headline && (
                     <CardHeadline className="card-headline" arrived={arrived}>
@@ -600,15 +618,15 @@ function ScrollPanel(props) {
                 </SectionText>
               </ServiceCard>        
             </SectionBody>
-          ) : props.sectionData.title === "Contact" ? (
+          ) : (props.index === props.totalSections - 1) ? (
             <ContactTable>
               <div className='contact-row'>
               <div className='contact-label'>
                 Phone:
               </div>              
               <div className='contact-value phone-number'>
-                <a href='tel:+1-971-284-0998'>
-                  (971) 284-0998
+                <a href={`tel:+1-${props.contactInfo.rawPhone}`}>
+                  {props.contactInfo.phone}
                 </a>
               </div>
               </div>
@@ -618,8 +636,8 @@ function ScrollPanel(props) {
                 Email:
               </div>
               <div className='contact-value'>
-              <a href='mailto:booking@wagsworthgrooming.com'>
-                booking@<br />wagsworthgrooming.com
+              <a href={`mailto:${props.contactInfo.email}`}>
+                {props.contactInfo.emailName}@<br />{props.contactInfo.emailDomain}
               </a>
               </div>
               </div>
@@ -651,7 +669,7 @@ function ScrollPanel(props) {
             </SectionBody>
           )
         )}
-        {props.sectionData.title === 'Services' &&
+        {props.sectionData.pricedServices &&
         <SectionBody className='services' showing={true}>
           <div className='service-label'>
             A La Carte
@@ -673,7 +691,7 @@ function ScrollPanel(props) {
       {props.slides.length > 4 && window.innerWidth < window.innerHeight && (
         <>
           <DotDisplay>
-            {props.slides.map((slide, i) => (
+            {props.slides && props.slides.map((slide, i) => (
               <Dot key={i} highlighted={slideShowing === i} />
             ))}
           </DotDisplay>
@@ -701,18 +719,23 @@ function ScrollPanel(props) {
           )}
         </>
       )}
-      {window.innerWidth < window.innerHeight && (
-        <BottomPanel arrived={arrived} {...{ [window.CLICK_METHOD]: props.onClickNextPhase }}>
-          {props.nextSectionTitle && (
-            <DownArrow
-              nextSectionTitle={props.nextSectionTitle}
-              arrived={arrived}
-            />
-          )}
-        </BottomPanel>
-      )}
+      <BottomPanel arrived={arrived} {...{ [window.CLICK_METHOD]: props.onClickNextPhase }}>
+        {props.nextSectionTitle && (
+          <DownArrow
+            nextSectionTitle={props.nextSectionTitle}
+            arrived={arrived}
+          />
+        )}
+      </BottomPanel>
     </SectionContainer>
   );
 }
-export default React.memo(ScrollPanel);
+
+function areEqual(prevProps, nextProps) {
+  let index = nextProps.index;
+  let equal = 
+    (nextProps.phase !== index && prevProps.phase !== index);
+  return equal;
+}
+export default React.memo(ScrollPanel, areEqual);
 // export default ScrollPanel;

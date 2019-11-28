@@ -4,7 +4,6 @@ require('console-green');
 
 const HamburgerContainer = styled.div`
   position: absolute;
-  /* background: blue; */
   z-index: 12;
   padding: 0;
   /* padding-top: calc(var(--hamburger-height) * 0.175); */
@@ -24,6 +23,13 @@ const HamburgerContainer = styled.div`
   margin-top: calc(var(--header-height) * 0.03);
   z-index: 6;
 
+  &.dark::after {
+    filter: invert(100%);
+  }
+  &.dark div {
+    background-color: var(--off-black);
+  }
+
   &::after {
     position: absolute;
     content: 'MENU';
@@ -32,6 +38,11 @@ const HamburgerContainer = styled.div`
     transform: translateX(-50%);
     left: 50%;
     bottom: calc(var(--header-height) / -12);
+  }
+  @media screen and (orientation: landscape) {
+    right: unset;
+    left: calc((100vw - var(--main-width)) / 2);
+    margin: 0;
   }
 `;
 // const ScissorArm = styled.img`
@@ -70,11 +81,11 @@ const HamBarBot = styled(HamBar)`
 function Hamburger(props) {
   // console.count('Hamburger');
   return (
-      <HamburgerContainer {...{ [window.CLICK_METHOD]: props.onHamburgerClick }} showing={!props.landscape} landed={props.landed}>
+      <HamburgerContainer className={props.dark && 'dark'} {...{ [window.CLICK_METHOD]: props.onHamburgerClick }} showing={!props.landscape} landed={props.landed}>
         <>
-          <HamBarTop menuOn={props.menuOn} ></HamBarTop>
-          <HamBarMid menuOn={props.menuOn} ></HamBarMid>
-          <HamBarBot menuOn={props.menuOn} ></HamBarBot>
+          <HamBarTop dark={props.dark} menuOn={props.menuOn} ></HamBarTop>
+          <HamBarMid dark={props.dark} menuOn={props.menuOn} ></HamBarMid>
+          <HamBarBot dark={props.dark} menuOn={props.menuOn} ></HamBarBot>
         </>
         {/* {props.menuOn ?
           <>

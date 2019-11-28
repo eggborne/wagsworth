@@ -7,30 +7,33 @@ require('console-green');
 const HeaderContainer = styled.header`
   --logo-width: 72vmin;
   position: absolute;
-  padding: 2vmin;
-  width: 100%;
+  top: 0;
+  padding: 1.5vmin;
+  width: var(--main-width);
   min-height: var(--header-height);
   /* height: ${props => props.collapsed ? 'var(--header-height)' : 'auto'}; */
-  height: ${props => true ? 'var(--header-height)' : 'auto'};
+  /* height: ${props => props.ready ? 'var(--header-height)' : 'auto'}; */
   font-family: var(--main-font), sans-serif;
   font-size: calc(var(--header-height) / 1.5);
   color: #ddd;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   z-index: 3;
-  /* transition: background-color var(--shift-speed) ease; */
+  background-color: var(--header-color);
+  transition: background-color var(--shift-speed) ease;
   ${props => props.showShadow ?
     `box-shadow: var(--header-shadow);
   background-color: var(--header-color);
   `
     :
     `box-shadow: 0;
-  background-color: rgba(255,255,255,0);
   `
   }
+  /* background-color: blue; */
   @media screen and (orientation: landscape) {
     max-height: var(--header-height);
-    /* background-color: var(--header-color) !important; */
+    box-shadow: none;
   }
   /* outline: 2px solid blue; */
 `;
@@ -39,19 +42,6 @@ const PhoneNumber = styled.div`
   /* right: calc(100vmin - var(--logo-width) - 2vmin); */
   top: calc(var(--header-height) * 0.15);
   right: calc(var(--hamburger-height) + var(--header-height) * 0.15);
-  ${props => props.collapsed ?
-    `
-    // border: 0.25vw solid rgba(255,255,255,0);
-    `
-    :
-    `
-    // border: 0.25vw solid #ffffff22;
-    // border-radius: 1vw;
-    `
-  }
-  /* border-right: 0; */
-  /* white-space: pre; */
-  /* padding: 1.5vmin; */
   padding: 0;
   display: grid;
   grid-template-columns: 1fr calc(var(--header-height) / 2.5);
@@ -62,13 +52,16 @@ const PhoneNumber = styled.div`
   color: var(--action-color);
   opacity: ${props => (props.showing ? '1 !important' : '0')};
   transform-origin: top right;
-  transform: ${props => props.collapsed ? 'none' : 'translateY(36vmin) scale(1.5) '};
   transition: transform 400ms ease, opacity 400ms ease !important;
   & a {
     color: var(--action-color);
     text-decoration: ${props => props.collapsed && 'none'};
   }
-  z-index: 4;
+  z-index: 12;
+
+  & :not(.collapsed) {
+    transform: translateY(36vmin) scale(1.5);
+  }
   & i {
     /* font-size: calc(var(--header-height) / 2.75);
     align-self: center;
@@ -85,6 +78,7 @@ const PhoneNumber = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    /* background: var(--header-color); */
   }
   & > div:first-child {
     display: flex;
@@ -96,50 +90,70 @@ const PhoneNumber = styled.div`
   & > div > img {
     width: 90%;
   }
+  &.black {
+    filter: invert(100%);
+  }
+  @media screen and (orientation: landscape) {
+    right: calc(var(--header-height) * 0.15);
+    & :not(.collapsed) {
+      transform: none;
+    }
+  }
 `;
 const EmailLink = styled(PhoneNumber)`
   top: calc(var(--header-height) * 0.55);
-  transform: ${props => props.collapsed ? 'none' : 'translateY(42vmin) scale(1.5)'};
   font-size: calc(var(--header-height) / 8);
   transition: transform var(--shift-speed) ease, opacity var(--shift-speed) ease;
   transform-origin: top right;
   & > div {
     animation-direction: alternate-reverse;
   }
+  & :not(.collapsed) {
+    transform: translateY(42vmin) scale(1.5);
+  }
+  @media screen and (orientation: landscape) {
+    right: calc(var(--header-height) * 0.15);
+    & :not(.collapsed) {
+      transform: none;
+    }
+  }
 `;
 const EmailAddress = styled.div`
   
 `;
 const LogoContainer = styled.div`
-  background-color: var(--header-color);
-  position: fixed;
   width: var(--logo-width);
   z-index: 4;
-  /* transform: translate(10vmin, calc(var(--header-height) * 0.4)); */  
   display: flex;
-
   ${props => props.pageLoaded ? 
     `transform-origin: top left;`
     :
     `transform-origin: 50% 50%;`
   }
-
-  ${props => props.collapsed ?
-    'transform: scale(0.47) translate(0, 0);'
-    :
+  ${
     props => (props.showing ?
       props.pageLoaded ? 
-        `transform: scale(1) translate(8vmin, calc(var(--header-height) * 0.4)); opacity: 0.99;`
+        `transform: scale(1) translate(8vmin, calc(var(--header-height) * 0.4)); opacity: 1;`
         :
-        `transform: scale(1) translate(8vmin, calc(var(--header-height) * 0.4)); opacity: 0.99;`
+        `transform: scale(1) translate(8vmin, calc(var(--header-height) * 0.4)); opacity: 1;`
       :
       `transform: scale(1.1) translate(8vmin, calc(var(--header-height) * 0.4)); opacity: 0;`
     )
   }
   transition: transform var(--shift-speed) ease, opacity 1000ms ease;
   will-change: transform, opacity;
+  &.collapsed {
+    transform: scale(0.47) translate(0, 0);
+  }
+  &.black > * {
+    filter: invert(100%);
+  }
   @media screen and (orientation: landscape) {
-    --logo-width: calc(var(--header-height) * 4);
+    --logo-width: calc(var(--header-height) * 6);
+
+    &.collapsed {
+    transform: scale(0.35) translate(calc(var(--header-height) * 2), 0);
+  }
 ;  }
 `;
 const MainLogo = styled.img`
@@ -185,11 +199,24 @@ const Monocle = styled(MainLogo)`
   z-index: 1;
 `;
 
+// const TitlePhoto = styled.div`
+//   position: absolute;
+//   top: 50vmin;
+//   background-image: url('http://wagsworthgrooming.com/titlepic.jpg');
+//   background-repeat: no-repeat;
+//   background-size: 100% 100%;
+//   /* background-color: orange; */
+//   width: 80vw;
+//   height: 60vw;
+//   /* height: 70vw; */
+//   /* z-index: 100; */
+//   outline: 4px solid red;
+// `;
+
 const phoneIcon = require('../assets/icons/phoneicon.png');
 const emailIcon = require('../assets/icons/emailicon.png');
 
 function Header(props) {
-  // const dogHeadRef = React.createRef();
   const [dogHeadRef, setDogHeadRef] = useState(React.createRef());
   const [pageLoaded, setPageLoaded] = useState(false);
   useEffect(() => {
@@ -200,11 +227,10 @@ function Header(props) {
   }, []);
   const handleDogClick = () => {
     if (props.menuOn) {
-      // this.handleHamburgerClick();
       props.onHamburgerClick();
     } else {
       if (props.phase > 0 || props.menuOn) {
-        props.onClickLogo();
+        props.onClickSmallLogo();
       } else {
         // pet the dog
         dogHeadRef.current.style.animationPlayState = 'running';
@@ -215,36 +241,46 @@ function Header(props) {
     }
   }
   // console.count('Header');
-  const showShadow = (props.phase > 1 || (props.phase === 1 && (props.lastPhase >= 2 || (props.lastPhase === 0 && !props.inTransit.to))));
+  let logoClass = `${props.collapsed ? 'collapsed' : ''}`;
+  let linkClass = `${props.collapsed ? 'collapsed' : ''}`;
+  if (props.blackLogo) {
+    logoClass += ' black'
+    linkClass += ' black';
+  }
+  const showShadow = 
+  !props.menuOn && 
+  (props.phase > 1 || (props.phase === 1 && (props.lastPhase >= 2 || (props.lastPhase === 0 && !props.inTransit.to))));
+  console.warn("SHAD", showShadow)
   return (
     <HeaderContainer collapsed={props.collapsed} menuOn={props.menuOn} showShadow={showShadow}>
       <LogoContainer
+        className={logoClass}
         pageLoaded ={pageLoaded}
         onClick={handleDogClick}
         showing={props.landed}
         collapsed={props.collapsed}>
         <Dog ref={dogHeadRef}>
           <DogHead src={props.logoPieces.dogHeadLogo} showing={props.landed} collapsed={props.collapsed} />
-          <Monocle src={props.logoPieces.monocleLogo} showing={props.landed} collapsed={props.collapsed} />
+          <Monocle id='monocle' src={props.logoPieces.monocleLogo} showing={props.landed} collapsed={props.collapsed} />
         </Dog>
         <Wagsworth src={props.logoPieces.wagsworthLogo} showing={props.landed} collapsed={props.collapsed} />
         <Grooming src={props.logoPieces.groomingLogo} showing={props.landed} collapsed={props.collapsed} />
       </LogoContainer>
-      <a href='tel:+1-971-284-0998'>
-        <PhoneNumber showing={props.landed} collapsed={props.collapsed}>
-          <div>(971) 284-0998</div>
+      <a href={`tel:+1-${props.contactInfo.rawPhone}`}>
+        <PhoneNumber showing={props.landed} className={linkClass}>
+          <div>{props.contactInfo.phone}</div>
           <div><img alt='' src={phoneIcon} /></div>
         </PhoneNumber>
       </a>
-      <a href='mailto:booking@wagsworthgrooming.com'>
-        <EmailLink showing={props.landed} collapsed={props.collapsed}>
+      <a href={`mailto:${props.contactInfo.email}`}>
+        <EmailLink showing={props.landed} className={linkClass}>
           <EmailAddress>
-            booking@wagsworthgrooming.com
+            {props.contactInfo.email}
           </EmailAddress>
           <div><img src={emailIcon} /></div>
         </EmailLink>
       </a>
-
+      {/* <TitlePhoto /> */}
     </HeaderContainer>
   );
 }
@@ -253,6 +289,7 @@ function areEqual(prevProps, nextProps) {
     && prevProps.collapsed === nextProps.collapsed
     && prevProps.phase !== 0
     && nextProps.phase !== 1
+    && prevProps.menuOn === nextProps.menuOn
 
   // console.pink('header is', equal);
 

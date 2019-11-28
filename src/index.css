@@ -10,17 +10,24 @@
   --text-color-5: #000000;
   --border-radius: 1vmin;
   --header-color: #171515;
-  --off-white: hsl(0, 0%, 65%);
+  --off-white: #a6a6a6;
+  --off-black: #191919;
   --off-blue: hsl(198, 69%, 79%);
   --action-color: #f3d8be;
   --action-color-dark: #362e27;
 
+  --border-filter: 0;
+
   --header-height: 0vw;
   --footer-height: calc(var(--header-height) * 2);
+
+  --section-header-height: calc(var(--header-height) * 1.25); 
+  --section-footer-height: calc(var(--header-height) * 1.25);
 
   --shift-speed: 0ms;
 
   --header-shadow: 0 0 calc(var(--header-height) * 0.1) rgba(0,0,0,0.75);
+  --footer-shadow: 0 0 calc(var(--header-height) * 0.1) rgba(0,0,0,0.75);
   --button-color: #212121;
   --selected-button-color: #213421;
   --selected-button-border-color: #212c21;
@@ -45,6 +52,8 @@
   --paper-height: calc(var(--section-height) - var(--paper-margin));
   --card-radius: 0.25rem;
 
+  --main-width: 100%;
+
 }
 * {
   box-sizing: border-box;
@@ -55,6 +64,11 @@ html {
   overflow: auto; /* for iOS to work */
   overscroll-behavior: none;
   font-size: 15px;
+  scrollbar-width: none;
+}
+::-webkit-scrollbar {
+  width: 0px;  /* Remove scrollbar space */
+  background: transparent;  /* Optional: just make scrollbar invisible */
 }
 body {
   --hamburger-height: calc(var(--header-height) * 0.75);
@@ -65,7 +79,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--header-color);
   width: 100vw;
-  height: var(--view-height);
+  min-height: var(--view-height);
+  display: flex;
+  align-items: center;
+}
+a {
+  color: rgb(122, 122, 255);
 }
 p {
   font-size: var(--main-font-size);
@@ -160,15 +179,18 @@ header {
   }
 }
 @media screen and (orientation: landscape) {
+  :root {
+    --main-width: 720px;
+    --main-width: calc(var(--view-height) - var(--header-height) - var(--footer-height));
+    --section-header-height: var(--header-height);
+    --section-footer-height: calc(var(--header-height) * 1.5);
+    --footer-height: calc(var(--header-height) / 1.5);
+  }
   body {
     display: flex;
     flex-direction: column;
     align-items: center;
     /* background: orange; */
-    height: unset;
-    width: 80vw;
-    max-width: 80vw;
-    margin: 0 auto;
-    /* overflow: unset; */
+    
   }
 }

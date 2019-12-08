@@ -31,14 +31,15 @@ const FooterContainer = styled.footer`
     animation-direction: alternate-reverse;
   }
   & > .social-area > div:first-child {
-    padding-bottom: 2vmin;
     font-weight: bold;
-    font-size: 1.25rem;
+    font-size: 1rem;
+    padding-bottom: 0.5rem;
   }
   @media screen and (orientation: landscape) {
     position: fixed;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-end;
+    padding: calc(var(--footer-height) / 6);
     justify-content: space-between;
     bottom: 0;
     z-index: 4;
@@ -49,7 +50,7 @@ const FooterContainer = styled.footer`
     }
     & > .social-area > div:first-child {
       padding-bottom: 0;
-      padding-right: 2vmin;
+      padding-right: calc(var(--footer-height) / 6);
     }
   }
 `;
@@ -105,8 +106,8 @@ const SocialIcons = styled.div`
   }
   @media screen and (orientation: landscape) {
     & img {
-      height: calc(var(--footer-height) / 1.75);
-      padding: 0 calc(var(--footer-height) / 5);
+      height: calc(var(--footer-height) / 2);
+      padding: 0 calc(var(--footer-height) / 8);
     }    
   }
 `;
@@ -130,7 +131,7 @@ function Footer(props) {
         </SocialIcons>
       </div>
       <LowerFooter>
-        <small>© {new Date().getFullYear()} Wagsworth Grooming  |  Website by <a href='http://mike@mikedonovan.dev'>mikedonovan.dev</a></small>
+        <small>© {new Date().getFullYear()} Wagsworth Grooming  |  Website by <a href='https://mikedonovan.dev'>mikedonovan.dev</a></small>
       </LowerFooter>
     </FooterContainer>
   );

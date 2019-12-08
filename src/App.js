@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { createRef, Suspense } from 'react';
 // import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import styled from 'styled-components/macro';
 import Header from './components/Header';
@@ -10,12 +10,14 @@ import Footer from './components/Footer';
 import { randomInt } from './scripts/quotes.js';
 // import Menu from './components/Menu';
 import axios from 'axios';
+const WebFont = require('webfontloader');
 const ScrollPanel = React.lazy(() => import('./components/ScrollPanel'));
 const Menu = React.lazy(() => import('./components/Menu'));
+
+
 const okForPublic = true;
-
 let testMode = process.env.NODE_ENV === 'development';
-
+// testMode = false;
 let lastDefaultWheelAction = 0;
 let editOrigin = testMode ? 'http://localhost:3001' : 'cms.eggborne.com';
 let editorData;
@@ -23,7 +25,9 @@ let editorData;
 const getCookie = cookieName => {
   let cookieObj;
   let name = cookieName + '=';
+  console.log('DOCUMENT COOKIE IS ------->', document.cookie)
   let decodedCookie = decodeURIComponent(document.cookie).split('; ');
+  console.log('decodedCookie COOKIE IS ------->', decodedCookie)
   cookieObj = decodedCookie.filter(str => str.split('=')[0] === cookieName);
   if (cookieObj.length === 1) {
     cookieObj = JSON.parse(cookieObj[0].split('=')[1]);
@@ -132,6 +136,7 @@ const MainContainer = styled.div`
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
+  overscroll-behavior: none;
   
   @media screen and (orientation: landscape) {
     align-items: center;
@@ -197,6 +202,7 @@ const IntroMessage = styled.div`
   
   & > .title-marquee {
     flex-grow: 1;
+    height: 100%;
     display: ${okForPublic ? 'flex' : 'none'};
     align-items: center;
     justify-content: center;
@@ -354,11 +360,12 @@ const SocialIcons = styled.div`
 class App extends React.PureComponent {
   constructor() {
     super();
-    this.dogHeadContainer = React.createRef();
+    this.dogHeadContainer = createRef();
     this.state = {
       ready: false,
       sections: [],
       faqs: [],
+      requirements: [],
       globalStyles: {},
       phase: 0,
       lastPhase: 0,
@@ -396,7 +403,7 @@ class App extends React.PureComponent {
               (scrollDirection > 0 && scrollPosition < (sectionScrollHeight - sectionHeight))
             );
             if (!scrollable) {
-              event.preventDefault();
+              // event.preventDefault();
               if (this.state.inTransit.to === null && !(sectionScrollHeight !== sectionHeight && Date.now()-lastDefaultWheelAction < 300)) {
                 let newPhase = this.state.phase + scrollDirection;
                 this.changePhase(newPhase);
@@ -445,7 +452,7 @@ class App extends React.PureComponent {
       // this.touchHandler.swipeActions.west = () => {
       //   console.warn('suck em balls')
       // } 
-      this.touchHandler.swipeActions.south = () => {
+      this.touchHandler.swipeActions.south = (event) => {
         let okayToScroll = true;
         const sectionElement = this.state.sections[this.state.phase].ref.current;
         const sectionHeight = sectionElement.offsetHeight;
@@ -511,6 +518,7 @@ class App extends React.PureComponent {
   }
 
   cleanseString = (str) => {
+    console.warn('trying to clean', str)
     let newStr = str.replace(/\|qq\|/g,"\"" ).replace(/`/g,"'" );
     console.warn(newStr);
     return newStr;
@@ -530,8 +538,9 @@ class App extends React.PureComponent {
     console.log('contentObj.data.saveStatus', contentObj.data.saveStatus)
     if (editorContent) {      
       content = content.content;
-      console.log('we is content', content)
+      console.log('we is editor content', content)
     } else {
+      console.log('we is DB content', content)
       for (let entry in content) {
         console.log('DOING', JSON.parse(content[entry]))
         // content[entry].replace(/`/, "'");
@@ -539,6 +548,31 @@ class App extends React.PureComponent {
         content[entry] = JSON.parse(content[entry]);
       }
     }
+
+    console.warn('checking fonts', content.fonts)
+
+    let oldTitle = getComputedStyle(document.documentElement).getPropertyValue('--title-font');
+    let oldMain = getComputedStyle(document.documentElement).getPropertyValue('--main-font');
+    let oldTitleSize = getComputedStyle(document.documentElement).getPropertyValue('--title-font-size');
+    let oldMainSize = getComputedStyle(document.documentElement).getPropertyValue('--main-font-size');
+
+    if (content.fonts.mainFont.fontFamily !== oldMain || content.fonts.titleFont.fontFamily !== oldTitle) {
+      WebFont.load({
+        google: {
+          families: [content.fonts.mainFont.fontFamily, content.fonts.titleFont.fontFamily],
+        }
+      });
+      document.documentElement.style.setProperty('--main-font', content.fonts.mainFont.fontFamily);
+      document.documentElement.style.setProperty('--title-font', content.fonts.titleFont.fontFamily);
+    }
+    if (content.fonts.mainFont.fontSize !== oldMainSize || content.fonts.titleFont.fontSize !== oldTitleSize) {
+      document.documentElement.style.setProperty('--main-font-size', content.fonts.mainFont.fontSize + 'rem');
+      document.documentElement.style.setProperty('--title-font-size', content.fonts.titleFont.fontSize + 'rem');
+    }
+
+
+
+
     document.documentElement.style.setProperty('--header-color', content.globalStyles.headerColor);
     document.querySelector("meta[name=theme-color]").setAttribute('content', content.globalStyles.headerColor);
     let niceNewData = content;
@@ -559,7 +593,7 @@ class App extends React.PureComponent {
     } else {
       newSections.forEach((section, i) => {
         console.log('on sec', section);
-        section.ref = React.createRef();
+        section.ref = createRef();
         if (section.slides) {
           section.slides.forEach((slide, j) => {
             slide.lowerText && slide.lowerText.forEach((para, p) => slide.lowerText[p] = this.cleanseString(para));
@@ -581,27 +615,61 @@ class App extends React.PureComponent {
     rawPhone = contactData.phone.replace(/\(/g, "")
     rawPhone = rawPhone.replace(/\)/g, "");
     rawPhone = `${rawPhone.split(' ')[0]}-${rawPhone.split(' ')[1]}`
-    console.warn('niceNewData', niceNewData);    
+    console.warn('niceNewData', niceNewData);
+
+    niceNewData.faqs.map((qSet, i) => {
+      console.log('fixi saq', qSet.question)
+      let newSet = {
+        question: this.cleanseString(qSet.question),
+        answer: qSet.answer.map(para => para = this.cleanseString(para))
+      }
+      console.log('fixed to', newSet);
+      niceNewData.faqs[i] = newSet;
+    });
+    niceNewData.requirements.map((qSet, i) => {
+      console.log('fixi req', i)
+      let newSet = {
+        headline: this.cleanseString(qSet.headline),
+        bodyText: qSet.bodyText[0].subheadline ? 
+        qSet.bodyText.map(subSet => 
+          ({
+            subheadline: this.cleanseString(subSet.subheadline),
+            subtext: subSet.subtext.map(subPara => subPara = this.cleanseString(subPara))
+          })
+        ) 
+        : 
+        qSet.bodyText.map(para => para = this.cleanseString(para))
+      }
+      console.log('fixed to', newSet);
+      niceNewData.requirements[i] = newSet;
+    });
+    niceNewData.sections[0].headline = this.cleanseString(niceNewData.sections[0].headline);
 
     this.setState({
       globalStyles: content.globalStyles,
       sections: newSections,
       faqs: niceNewData.faqs,
+      requirements: niceNewData.requirements,
       contactInfo: {
         email,
         phone,
         emailName,
         emailDomain,
-        rawPhone
+        rawPhone,
+        address: contactData.address
       },
       saveStatus: contentObj.data.saveStatus
     }, async () => {
       console.warn('we doin it')
       if (!editorContent && !this.state.ready) {
         this.setState({ ready: true });        
-        let foundCookie = getCookie('eggborne-cms');
-        if (foundCookie) {
-          let response = await validateToken(foundCookie);
+        console.log('LOCATIO', window.location.href)
+        // let foundCookie = getCookie('eggborne-cms');
+        let foundToken = window.location.href.indexOf('?') > -1 && window.location.href.split('?')[1].split('=')[1];
+        console.log('foundToken?', foundToken)
+        if (foundToken) {
+          let username = testMode ? 'Mike' : 'susan';
+          let response = await validateToken(username, foundToken);
           if (response.data) {
             console.warn('IS GOOD', window);
             if (window.parent.opener) {   
@@ -611,8 +679,11 @@ class App extends React.PureComponent {
           } else {
             console.warn('TOKEN NO GOOD')
           }
+        } else {
+          console.error('cookie not found')
         }
-        this.touchHandler.setInputs();
+        // this.touchHandler.setInputs();
+        // WAG
       }
     });
 
@@ -732,10 +803,14 @@ class App extends React.PureComponent {
   //   }
   // }
 
-  componentWillMount = () => {
+  componentWillMount = async () => {
     if (okForPublic) {
-      this.fillFromDB();
-      this.touchHandler.setInputs(window.EDIT_MODE);
+      // this.fillFromDB();
+      // this.touchHandler.setInputs();
+      // WAG 2
+      await this.fillFromDB();
+      this.touchHandler.setInputs();
+      // WAG 2
       setTimeout(() => {
         this.setState({
           lazyLoad1: true
@@ -760,8 +835,9 @@ class App extends React.PureComponent {
       // headline2 = `coming soon...`;
     }
     window.addEventListener('resize', e => {
-      adjustToSize();
-      this.changePhase(this.state.phase, true);
+      // adjustToSize();
+      // this.changePhase(this.state.phase, true);
+      // WAG 3
     });
   }
   componentDidMount = () => {
@@ -896,13 +972,12 @@ class App extends React.PureComponent {
                 touchHandler={this.touchHandler}
                 titlePhotoSize = {this.titlePhotoSize()}
                 images={[
-                  'http://wagsworthgrooming.com/titlepic0.jpg',
-                  'http://wagsworthgrooming.com/titlepic1.jpg',
-                  'http://wagsworthgrooming.com/titlepic2.jpg'
+                  'https://wagsworthgrooming.com/titlepic0.jpg',
+                  'https://wagsworthgrooming.com/titlepic1.jpg',
+                  'https://wagsworthgrooming.com/titlepic2.jpg'
                 ]}
                 landed={this.state.landed && this.state.phase === 0}
                 phase={this.state.phase}
-
               />
               {/* <TitlePhoto src='http://wagsworthgrooming.com/titlepic.jpg' landed={this.state.landed && this.state.phase === 0}/> */}
               <div className='title-marquee'>{this.state.sections[this.state.phase].headline}</div>        
@@ -925,9 +1000,9 @@ class App extends React.PureComponent {
               {this.state.sections.map((section, i) => {
                 if (okForPublic && this.state.ready && totalSections && i > 0) {
                   return (
-              <Suspense fallback={<></>}>
+                    <Suspense key={i} fallback={<></>}>
                     <ScrollPanel                   
-                      key={section.title + i}
+                      key={section.title}
                       title={section.title}
                       faq={i === 3}
                       type={section.type}
@@ -937,7 +1012,8 @@ class App extends React.PureComponent {
                       slides={section.slides}
                       centerImages={section.centerImages}
                       headline={section.headline}
-                      faqs={i === 3 && [...this.state.faqs]}
+                      faqs={section.type === 'faq' && [...this.state.faqs]}
+                      requirements={section.type === 'req' && [...this.state.requirements]}
                       lowerText={section.lowerText}
                       phaseTitles={phaseTitles}
                       phase={this.state.phase}
@@ -948,10 +1024,10 @@ class App extends React.PureComponent {
                       totalSections={totalSections}
                       instant={Math.abs(this.state.lastPhase - this.state.phase) > 1}
                     />
-                </Suspense>
-                    );
-                  }
-                })}
+                  </Suspense>
+                  );
+                }
+              })}
               {!window.IS_LANDSCAPE && <Footer />}
         </SectionScrollContainer>}
               {window.EDIT_MODE &&

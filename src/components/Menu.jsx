@@ -39,7 +39,7 @@ const NavGroup = styled.div`
 
 const BoneButton = styled.nav`
   border-radius: 2vw;
-  font-size: calc(var(--nav-item-height) / 2.5);
+  font-size: ${props => props.long ? 'calc(var(--nav-item-height) / 3)' : 'calc(var(--nav-item-height) / 2.5)'};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -96,7 +96,8 @@ function Menu(props) {
           <BoneButton style={{ backgroundColor: section.style.backgroundColor, color: section.style.color }} id={i+1} showing={props.showing} key={section.title} 
           {...{ [window.CLICK_METHOD]: handleNavItemClick }}
           // onPointerDown={handleNavItemClick} 
-          selected={props.phase === i+1}>
+          selected={props.phase === i+1}
+          long={section.title.length > 11}>
             {section.title}
             <BoneKnob />
             <BoneKnob />

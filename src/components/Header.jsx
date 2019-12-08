@@ -290,6 +290,7 @@ function areEqual(prevProps, nextProps) {
     && prevProps.phase !== 0
     && nextProps.phase !== 1
     && prevProps.menuOn === nextProps.menuOn
+    && prevProps.contactInfo === nextProps.contactInfo
 
   // console.pink('header is', equal);
 

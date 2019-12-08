@@ -40,8 +40,8 @@
   --main-text-color: #282828;
 
   --main-font-size: 1rem;
-  --headline-font-size: calc(var(--main-font-size) * 1.25);
   --title-font-size: calc(var(--main-font-size) * 2.25);
+  --headline-font-size: calc(var(--main-font-size) * 1.25);
   /* --main-font-size: 3.5vw; */
   /* --title-font-size: 16vw; */
 
@@ -58,6 +58,8 @@
 * {
   box-sizing: border-box;
   user-select: none;
+  /* overscroll-behavior: none; */
+  /* -webkit-overflow-scrolling: none; */
 }
 html {
   position: fixed; /* for iOS to prevent bouncy scroll */
@@ -71,6 +73,7 @@ html {
   background: transparent;  /* Optional: just make scrollbar invisible */
 }
 body {
+  -webkit-overflow-scrolling: touch;
   --hamburger-height: calc(var(--header-height) * 0.75);
   margin: 0;
   padding: 0;
@@ -80,6 +83,7 @@ body {
   background-color: var(--header-color);
   width: 100vw;
   min-height: var(--view-height);
+  max-height: unset;
   display: flex;
   align-items: center;
 }
@@ -184,7 +188,7 @@ header {
     --main-width: calc(var(--view-height) - var(--header-height) - var(--footer-height));
     --section-header-height: var(--header-height);
     --section-footer-height: calc(var(--header-height) * 1.5);
-    --footer-height: calc(var(--header-height) / 1.5);
+    --footer-height: calc(var(--header-height) / 2);
   }
   body {
     display: flex;

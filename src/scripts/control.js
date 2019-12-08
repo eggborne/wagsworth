@@ -66,18 +66,18 @@ export class TouchHandler {
       }
     };
     this.swipeActions = {
-      'north': function() {
-        // // console.green("UP");
-      },
-      'south': function() {
-        // // console.green("DOWN");
-      },
-      'west': function() {
-        console.green("LEFT");
-      },
-      'east': function() {
-        console.green("RIGHT");
-      },
+      // 'north': function() {
+      //   // // console.green("UP");
+      // },
+      // 'south': function() {
+      //   // // console.green("DOWN");
+      // },
+      // 'west': function() {
+      //   console.green("LEFT");
+      // },
+      // 'east': function() {
+      //   console.green("RIGHT");
+      // },
       // 'northwest': function () {
       //   // // console.green("UP-LEFT");
       // },
@@ -92,23 +92,23 @@ export class TouchHandler {
       // },
     };
   }
-  touchStart(event) {
+  touchStart = (event) => {
     for (var i = 0; i < event.targetTouches.length; i++) {
       var newTouch = event.targetTouches[i];
       this.currentTouches.push(new Touch(this, newTouch));
     }
   }
-  touchMove(event) {
+  touchMove = (event) => {
     var movingTouches = [];
     for (var i = 0; i < event.targetTouches.length; i++) {
       var movingTouch = event.targetTouches[i];
       var touchCopy = { 'identifier': movingTouch.identifier, 'pageX': movingTouch.pageX, 'pageY': movingTouch.pageY };
       movingTouches.push(touchCopy);
     }
-    movingTouches.forEach(function (touchEvent) {
+    movingTouches.forEach((touchEvent) => {
       var touchObject = new Touch(this, touchEvent);
       // take each touch that moved...
-      this.currentTouches.forEach(function (existingTouch, j) {
+      this.currentTouches.forEach((existingTouch, j) => {
         //...find it in the list...
         if (touchObject.identifier === existingTouch.identifier) {
           //...replace the old {x,y} with the new one
@@ -121,24 +121,27 @@ export class TouchHandler {
             lastSwiped = window.performance.now();
           }
         }
-      },this);
-    },this);
+      });
+    });
   }
-  touchEnd(event) {
-    Array.from(event.targetTouches).forEach(function (touch, i) {
-      // var duration = this.currentTouches[i].getDuration();
-      // var distance = this.currentTouches[i].getDistance();
-      // // if (duration <= this.gestures.tap.time
-      // //   && distance.x <= this.gestures.tap.distance && distance.y < this.gestures.tap.distance) {
-      // //   true;
-      // // }
+  touchEnd = (event) => {
+    // Array.from(event.targetTouches).forEach(function (touch, i) {
+    //   // var duration = this.currentTouches[i].getDuration();
+    //   // var distance = this.currentTouches[i].getDistance();
+    //   // // if (duration <= this.gestures.tap.time
+    //   // //   && distance.x <= this.gestures.tap.distance && distance.y < this.gestures.tap.distance) {
+    //   // //   true;
+    //   // // }
+    //   this.currentTouches.splice(i, 1);
+    // },this);
+    for (var i = 0; i < event.targetTouches.length; i++) {
       this.currentTouches.splice(i, 1);
-    },this);
+    }
   }
   setInputs() {
-    document.body.addEventListener('touchstart', this.touchStart.bind(this), true);
-    document.body.addEventListener('touchmove', this.touchMove.bind(this), true);
-    document.body.addEventListener('touchend', this.touchEnd.bind(this), true);
+    document.body.addEventListener('touchstart', this.touchStart, {passive: false});
+    document.body.addEventListener('touchmove', this.touchMove, {passive: true});
+    document.body.addEventListener('touchend', this.touchEnd, {passive: true});
     // this.bound = true;
   }
 }

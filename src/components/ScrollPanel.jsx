@@ -44,9 +44,9 @@ const SectionContainer = styled.section`
     grid-column-end: span 3;
   }
 
-  & .service-icon {
-    ${props => props.style.iconFilters};
-  }
+  /* & .service-icon {
+    ${props => props.style.iconColor !== '#000000' && props.style.iconFilters}
+  } */
 
   &::before {
     box-sizing: border-box;
@@ -61,7 +61,7 @@ const SectionContainer = styled.section`
     border-image-source: url(${borderUrl});
     border-image-slice: 50%;
     border-image-width: calc(var(--header-height) * 1.5);
-    z-index: 1;
+    z-index: 2;
     pointer-events: none;
     ${props => props.style.fancyBorderFilters}
   }
@@ -81,20 +81,6 @@ const SectionContainer = styled.section`
 
   }
 `;
-const BodyScrollContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: calc(
-    var(--section-height) - var(--section-header-height) - var(--section-footer-height)
-    );
-  pointer-events: all;
-  overflow-y: auto;
-    
-  @media screen and (orientation: landscape) {
-    align-items: center;
-    max-width: 100%;
-  }
-`;
 const FadeEdge = styled.div`
   position: absolute;
   width: calc(var(--main-width) - (var(--header-height) * 1.25));
@@ -106,7 +92,7 @@ const FadeEdge = styled.div`
     60%,
     ${props => props.bgColor}00 100%
   );
-  z-index: 2;
+  z-index: 12;
 
   /* display: none; */
 
@@ -133,7 +119,8 @@ const SectionTitle = styled.header`
   transform: ${props => (props.arrived ? "none" : "scale(1.2)")};
   text-align: center;
   /* color: var(--title-text-color); */
-  font-size: var(--title-font-size);
+  font-size: ${props => props.long ? 'calc(var(--title-font-size) / 1.15)' : 'var(--title-font-size)'};
+  ${props => props.long&& 'padding-top: 0.5rem;'}
   align-self: stretch;
   justify-self: stretch;
   display: flex;
@@ -165,25 +152,26 @@ const SectionHeadline = styled.div`
 `;
 const CardHeadline = styled(SectionHeadline)`
   font-family: var(--title-font);
-  font-size: 2rem !important;
+  font-size: calc(var(--title-font-size) * 0.8);
 
   @media screen and (orientation: landscape) {
   }
 `;
 const SectionBody = styled.div`
-  padding: calc(var(--section-height) / 16) calc(var(--main-width) * 0.15);
+  padding: calc(var(--section-height) / 16) calc(var(--main-width) * 0.125);
   width: var(--main-width);
   /* font-size: calc(var(--main-font-size) * 1.1); */
   &.services {
-    /* padding: 10% 12%; */
-    padding-top: calc(var(--section-height) / 18);
+    /* padding: 10% 12%; */    
+    padding-top: calc(var(--section-height) / 24);
+
   }
   &.services:last-of-type {
     /* padding: 10% 12%; */
     padding-bottom: calc(var(--section-height) / 24);
   }
   & > .service-label {
-    font-size: 1.8rem;
+    font-size: calc(var(--title-font-size) * 0.75);
     width: 100%;
     text-align: center;
     /* text-shadow: 2px 2px 2vw #33333399; */
@@ -191,7 +179,7 @@ const SectionBody = styled.div`
   }
 
   & > .service-note {
-    font-size: 1rem;
+    font-size: var(--main-font-size);
     padding: 1rem;
     border-radius: var(--card-radius);
     font-family: var(--main-font);
@@ -199,10 +187,6 @@ const SectionBody = styled.div`
     margin-top: calc(var(--header-height) / 2);
     background-color: #ffffff07;
     color: black;
-    /* text-shadow: 1px 1px 1px #000000aa */
-    ;
-    border: 1px solid #00000066;
-    /* box-shadow: 0 0.2rem 0.25em #00000066, 0 0px 0 1px #00000066; */
   }
   
   @media screen and (orientation: landscape) {
@@ -215,30 +199,68 @@ const SectionBody = styled.div`
     }
   }
 `;
+const BodyScrollContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: calc(
+    var(--section-height) - var(--section-header-height) - var(--section-footer-height)
+  );
+  pointer-events: all;
+  overflow-y: auto;   
+
+  &.fade-edges::after {
+    display: none;
+    position: absolute;
+    content: '';
+    width: var(--main-width);
+    height: calc(
+      var(--section-height) - var(--section-header-height) - var(--section-footer-height) + 2px
+    );
+    box-shadow: 
+      inset 0 calc(var(--section-header-height) / 4) calc(var(--section-header-height) / 4) 0 ${props => props.bgColor},
+      inset 0 calc(var(--section-header-height) / -4) calc(var(--section-header-height) / 4) 0 ${props => props.bgColor}
+    ;]
+    z-index: 1;
+    /* border-top: calc(var(--section-header-height) / 12) solid ${props => props.bgColor}; */
+    /* border-bottom: calc(var(--section-header-height) / 12) solid ${props => props.bgColor}; */
+    outline: 4px solid ${props => props.bgColor};
+  }
+
+  @media screen and (orientation: landscape) {
+    align-items: center;
+    max-width: 100%;
+  }
+`;
 const ServiceCard = styled.div`
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: min-content 1fr;
-  padding: 8vmin;
-  padding-top: calc(var(--section-height) / 24);
+  padding: calc(var(--main-width) / 10);
   grid-row-gap: calc(var(--section-height) / 24);
   border-radius: var(--card-radius);
-  box-shadow: 0 0.1rem 0.25em #00000066, 0 0px 0 1px #00000066;
+  /* box-shadow: 0 0.1rem 0em #00000066, 0 0px 0 1px #00000066; */
+  border: 1px solid #00000030;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 
   & > .card-top {
     grid-column-end: span 2;
     justify-self: stretch;
     display: flex;
-    justify-content: space-between;
+    /* justify-content: space-between; */
     align-items: center;
+  }
+
+  & > .card-top > div:first-of-type {
+    margin-right: calc(var(--section-height) / 24);
   }
   
   & > .card-top > .card-headline {
-    padding: 0;
+    flex-grow: 1;
     margin: 0;
     display: unset;
-    width: auto;
+    line-height: 100%;
+    text-align: center;
   }
 
   & .card-body {
@@ -249,7 +271,7 @@ const ServiceCard = styled.div`
   & .card-top img {
     height: calc(var(--section-height) / 10);
     width: calc(var(--section-height) / 10);
-    /* justify-self: start; */
+    ${props => props.iconFilters}
   }
 
   & > summary {
@@ -257,13 +279,14 @@ const ServiceCard = styled.div`
   }
 
   @media screen and (orientation: landscape) {
-    width: calc(var(--main-width) / 1.5);
+    width: calc(var(--main-width) / 2);
+    padding: calc(var(--section-height) / 20);
     align-self: center;
     justify-self: center;
   }
 `;
 const TextBody = styled.div`
-  padding: calc(var(--section-height) / 16) calc(var(--main-width) * 0.15);
+  padding: calc(var(--section-height) / 16) calc(var(--main-width) * 0.125);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -325,7 +348,7 @@ const ContactTable = styled.div`
   display: flex;
   flex-direction: column;
   width: 70vmin;
-  height: calc(var(--section-height) - var(--section-header-height)  - var(--section-footer-height) / 1.5 - var(--footer-height));
+  height: calc(var(--section-height) - var(--section-header-height)  - var(--section-footer-height) - var(--footer-height));
   pointer-events: all;
 
   & * {
@@ -485,14 +508,18 @@ const QuestionSet = styled.div`
   transition: transform 800ms ease, opacity 800ms ease;
   transition-delay: calc(var(--shift-speed) / 2);
   justify-self: flex-start;
+    margin-bottom: 2vh;
 
   & :last-of-type {
-    margin-bottom: 4vh;
+    /* margin-bottom: 4vh; */
   }
 
   & > .question {
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--card-radius);
     font-size: 1.05em;
-    font-weight: bolder;
+    font-weight: bold;
+    border: 1px solid ${props => props.textColor}77;
   }
   & > .answer {
     margin: 1vh;
@@ -501,6 +528,14 @@ const QuestionSet = styled.div`
     justify-self: flex-start;
   }
 `;
+const RequirementSet = styled(QuestionSet)`
+  & > .question {
+    font-size: 1.25em;
+    border: none;
+    text-align: center;
+  }
+`
+
 function ScrollPanel(props) {
   const [arrived, setArrival] = useState(false);
   const [transition, setTransition] = useState("in");
@@ -546,9 +581,10 @@ function ScrollPanel(props) {
   // } else if (Math.abs(props.lastPhase - props.phase) > 1) {
   //   containerClass += " instant";
   // }
-  let fadeEdges =
+  let fadeEdges = 
   props.sectionData.pricedServices ||
   props.sectionData.type === "faq" ||
+  props.sectionData.type === "req" ||
   sectionTitle === "About Me";
 
   console.warn('panel', props.index)
@@ -560,7 +596,7 @@ function ScrollPanel(props) {
       style={props.style}
       className={containerClass}
     >
-      <SectionTitle arrived={arrived}>
+      <SectionTitle arrived={arrived} long={sectionTitle.length > 11}>
         {sectionTitle}
         <SectionHeadline arrived={arrived}>
           {props.sectionData.headline}
@@ -581,14 +617,16 @@ function ScrollPanel(props) {
         ref={props.sectionData.ref}
         // style={{ transform: `translateX(${slideShowing * -window.innerWidth}px)` }}
         slides={props.slides}
+        bgColor={props.style.backgroundColor}
+        className={fadeEdges ? 'fade-edges' : ''}
       >
         {props.slides && props.slides.map((slide, i) =>
-          props.faq ? (
+          props.sectionData.type === 'faq' ? (
             <TextBody showing={true} key={"body" + i}>
               {props.faqs
                 .filter((faq, f) => faq.question && faq.answer)
                 .map((pair, p) => (
-                  <QuestionSet arrived={arrived} key={(i + 1) * p}>
+                  <QuestionSet bgColor={props.sectionData.style.backgroundColor} textColor={props.sectionData.style.color} arrived={arrived} key={(i + 1) * p}>
                     <div className="question">{pair.question}</div>
                     <div className="answer">
                       {pair.answer.map((paragraph, r) => (
@@ -598,12 +636,37 @@ function ScrollPanel(props) {
                   </QuestionSet>
                 ))}
             </TextBody>
+          ) : props.sectionData.type === 'req' ? (
+            <TextBody showing={true} key={"body" + i}>
+              {props.requirements
+                .filter((req, f) => req.headline && req.bodyText)
+                .map((pair, p) => (
+                  <RequirementSet bgColor={props.sectionData.style.backgroundColor} textColor={props.sectionData.style.color} arrived={arrived} key={(i + 1) * p}>
+                    <div className="question">{pair.headline}</div>
+                    <div className="answer">
+                      {pair.bodyText.map((paragraph, r) => (
+                        typeof paragraph === 'string' ? 
+                        <p key={'req'+ r}>{paragraph}</p>
+                        :
+                        <p key={'req'+ r}>
+                          <span style={{fontWeight: 'bold', display: 'block', textAlign: 'center', padding: '0.5rem'}}>
+                            {paragraph.subheadline}
+                          </span>
+                          {paragraph.subtext}
+                        </p>
+                      ))}
+                    </div>
+                  </RequirementSet>
+                ))}
+            </TextBody>
           ) : props.sectionData.pricedServices ? (
             <SectionBody className={"services"} showing={true} key={i}>              
-               <ServiceCard style={{ backgroundColor: slide.bgColor }}>
+               <ServiceCard iconFilters={props.style.iconFilters} style={{ backgroundColor: slide.bgColor }}>
                 <div className='card-top'>
                   {slide.images.center && (
-                    <FadeImage className='service-icon' arrived={arrived} src={slide.images.center} />
+                    <div>
+                      <FadeImage className='service-icon' arrived={arrived} src={slide.images.center} />                  
+                    </div>
                   )}
                   {slide.headline && (
                     <CardHeadline className="card-headline" arrived={arrived}>
@@ -619,7 +682,7 @@ function ScrollPanel(props) {
               </ServiceCard>        
             </SectionBody>
           ) : (props.index === props.totalSections - 1) ? (
-            <ContactTable>
+            <ContactTable key={i}>
               <div className='contact-row'>
               <div className='contact-label'>
                 Phone:
@@ -643,9 +706,9 @@ function ScrollPanel(props) {
               </div>
 
               <div className='contact-row address'>
-                <div>Located inside Scooby Shack</div>
-                <div>17620 63rd Ave.</div>
-                <div>Lake Oswego, OR 97035</div>
+                {props.contactInfo.address.map((line, i) =>
+                  <div key={i}>{line}</div>                
+                )}
               </div>
               <div ref={mapRef} className='google-map'>
                 MAP GO HERE

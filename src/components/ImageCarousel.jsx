@@ -16,6 +16,7 @@ const ImageCarouselContainer = styled.div`
   opacity: ${props => (props.landed ? 1 : 0)};
   transform: ${props => (props.landed ? 'scale(1)' : 'scale(0.9)')};
   transition: transform 500ms ease, opacity 500ms ease;
+  transition-delay: 600ms;
   
   @media screen and (orientation: landscape) {
     max-width: calc(var(--image-width) + (var(--header-height) * 2));
@@ -84,6 +85,7 @@ const ArrowPanel = styled.div`
   pointer-events: all;
   z-index: 2;
   opacity: ${props => props.showing ? 1 : 0};
+  pointer-events: ${props => props.showing ? 'all' : 'none'};
   transition: opacity 500ms ease;
 
   &:last-child {
@@ -96,23 +98,22 @@ function ImageCarousel(props) {
   useEffect(() => {
     props.touchHandler.swipeActions.west = (e) => {
       let currentImage = parseInt(e.target.id.split('-')[2]);
-      console.log('WEST', currentImage)
       if (currentImage < props.images.length - 1) {
         setImageSelected(currentImage + 1);
       }
     }
     props.touchHandler.swipeActions.east = (e) => {
       let currentImage = parseInt(e.target.id.split('-')[2]);
-      console.log('EAST', currentImage)
       if (currentImage > 0) {
         setImageSelected(currentImage - 1)
       }
     }
-  }, [props.touchHandler])
+  }, [props.touchHandler]);
+
   return (    
     <ImageCarouselContainer titlePhotoSize={props.titlePhotoSize} imageSelected={imageSelected} landed={props.landed}>
       <ArrowPanel
-      showing={imageSelected > 0}
+        showing={imageSelected > 0}
         onPointerDown={() => {
           setImageSelected(imageSelected - 1);
         }}
@@ -123,11 +124,11 @@ function ImageCarousel(props) {
       <ImageContainer imageSelected={imageSelected}>
         {props.images.map((image, i) => 
           <TitlePhoto id={`title-photo-${i}`} key={i} src={image} selected={imageSelected === i} />
-          )}
+        )}
       </ImageContainer>
       <div></div>
       <ArrowPanel
-      showing={imageSelected < props.images.length - 1}
+        showing={imageSelected < props.images.length - 1}
         onPointerDown={() => {
           setImageSelected(imageSelected + 1);
         }}

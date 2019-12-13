@@ -1,8 +1,34 @@
+import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
+
 let lastSwiped = 0;
+let postTouchCheckTime = 1000;
+let lastMovedTouch = 0;
+
+const debounce = function(fn) {
+  // Setup a timer
+  var timeout;
+
+  // Return a function to run debounced
+  return function() {
+    // Setup the arguments
+    var context = this;
+    var args = arguments;
+
+    // If there's a timer, cancel it
+    if (timeout) {
+      window.cancelAnimationFrame(timeout);
+    }
+
+    // Setup the new requestAnimationFrame()
+    timeout = window.requestAnimationFrame(function() {
+      fn.apply(context, args);
+    });
+  };
+};
 
 class Touch {
-  constructor(handler, touchEvent) {
-    this.handler = handler;
+  constructor(gestures, touchEvent) {
+    this.gestures = gestures;
     this.identifier = touchEvent.identifier;
     this.startTime = Date.now();
     this.x = Math.round(touchEvent.pageX);
@@ -14,134 +40,116 @@ class Touch {
     return Date.now() - this.startTime;
   }
   getDistance() {
-    let distance = {};
-    distance.x = this.x - this.startSpot.x;
-    distance.y = this.y - this.startSpot.y;
+    let distance = {
+      x: this.x - this.startSpot.x,
+      y: this.y - this.startSpot.y
+    };
     return distance;
   }
   getSwipe() {
-    let fullSwipe = "";
     let duration = this.getDuration();
     let distance = this.getDistance();
-    if (distance.y <= this.handler.gestures.swipe.north.distance && duration <= this.handler.gestures.swipe.north.duration) {
-      fullSwipe += "north";
-    } else if (distance.y >= this.handler.gestures.swipe.south.distance && duration <= this.handler.gestures.swipe.south.duration) {
-      fullSwipe += "south";
-    } else if (distance.x <= this.handler.gestures.swipe.west.distance && duration <= this.handler.gestures.swipe.west.duration) {
-      fullSwipe += "west";
-    } else if (distance.x >= this.handler.gestures.swipe.east.distance && duration <= this.handler.gestures.swipe.east.duration) {
-      fullSwipe += "east";
+    if (distance.y <= this.gestures.swipe.north.distance && duration <= this.gestures.swipe.north.duration) {
+      return 'north';
+    } else if (distance.y >= this.gestures.swipe.south.distance && duration <= this.gestures.swipe.south.duration) {
+      return 'south';
+    } else if (distance.x <= this.gestures.swipe.west.distance && duration <= this.gestures.swipe.west.duration) {
+      return 'west';
+    } else if (distance.x >= this.gestures.swipe.east.distance && duration <= this.gestures.swipe.east.duration) {
+      return 'east';
     }
-    return fullSwipe;
   }
 }
 export class TouchHandler {
   constructor() {
+    console.big('TTTTOOOOUUUCCCHHHHHANNNDDDLEERR');
     this.bound = false;
     this.currentTouches = [];
+    this.currentTouch = undefined;
     this.gestures = {
-      'tap': {
-        'time': 75,
-        'distance': 2
+      tap: {
+        time: 75,
+        distance: 2
       },
-      'swipe': {
-        'north': {
+      swipe: {
+        north: {
           // 'distance': -30,
-          'distance': -20,
+          distance: -20,
           // 'duration': 100
-          'duration': 100
+          duration: 100
         },
-        'south': {
-          'distance': 20,
-          'duration': 100
+        south: {
+          distance: 20,
+          duration: 100
         },
-        'west': {
-          'distance': -40,
-          'duration': 100
+        west: {
+          distance: -40,
+          duration: 100
         },
-        'east': {
-          'distance': 40,
-          'duration': 100
+        east: {
+          distance: 40,
+          duration: 100
         }
       }
     };
-    this.swipeActions = {
-      // 'north': function() {
-      //   // // console.green("UP");
-      // },
-      // 'south': function() {
-      //   // // console.green("DOWN");
-      // },
-      // 'west': function() {
-      //   console.green("LEFT");
-      // },
-      // 'east': function() {
-      //   console.green("RIGHT");
-      // },
-      // 'northwest': function () {
-      //   // // console.green("UP-LEFT");
-      // },
-      // 'northeast': function () {
-      //   // // console.green("UP-RIGHT");
-      // },
-      // 'southwest': function () {
-      //   // // console.green("DOWN-LEFT");
-      // },
-      // 'southeast': function () {
-      //   // // console.green("DOWN-RIGHT");
-      // },
+    this.swipeActions = {};
+  }
+  getSwipe() {
+    let duration = Date.now() - this.touchStartTime;
+    let distance = {
+      x: this.currentTouch.x - this.touchStartSpot.x,
+      y: this.currentTouch.y - this.touchStartSpot.y
     };
-  }
-  touchStart = (event) => {
-    for (var i = 0; i < event.targetTouches.length; i++) {
-      var newTouch = event.targetTouches[i];
-      this.currentTouches.push(new Touch(this, newTouch));
+    
+    let swipe = '';
+    if (distance.y <= this.gestures.swipe.north.distance && duration <= this.gestures.swipe.north.duration) {
+      swipe += 'north';
+    } else if (distance.y >= this.gestures.swipe.south.distance && duration <= this.gestures.swipe.south.duration) {
+      swipe += 'south';
+    } else if (distance.x <= this.gestures.swipe.west.distance && duration <= this.gestures.swipe.west.duration) {
+      swipe += 'west';
+    } else if (distance.x >= this.gestures.swipe.east.distance && duration <= this.gestures.swipe.east.duration) {
+      swipe += 'east';
     }
+    return swipe;
   }
-  touchMove = (event) => {
-    var movingTouches = [];
-    for (var i = 0; i < event.targetTouches.length; i++) {
-      var movingTouch = event.targetTouches[i];
-      var touchCopy = { 'identifier': movingTouch.identifier, 'pageX': movingTouch.pageX, 'pageY': movingTouch.pageY };
-      movingTouches.push(touchCopy);
+  touchStart = event => {
+    const newTouch = event.targetTouches[0];
+    this.currentTouch = { x: Math.round(newTouch.pageX), y: Math.round(newTouch.pageY) };
+    this.touchStartTime = Date.now();
+    this.touchStartSpot = { x: this.currentTouch.x, y: this.currentTouch.y };
+    const targetId = event.target.id;
+    let sectionIndex;
+    if (targetId.split('-')[0] === 'section') {
+      sectionIndex = targetId.split('-')[1];
+    } else {
+      sectionIndex = 3;
     }
-    movingTouches.forEach((touchEvent) => {
-      var touchObject = new Touch(this, touchEvent);
-      // take each touch that moved...
-      this.currentTouches.forEach((existingTouch, j) => {
-        //...find it in the list...
-        if (touchObject.identifier === existingTouch.identifier) {
-          //...replace the old {x,y} with the new one
-          this.currentTouches[j].x = touchObject.x;
-          this.currentTouches[j].y = touchObject.y;
-          // check if it has completed a swipe
-          var swiped = this.currentTouches[j].getSwipe();
-          if (swiped && (window.performance.now() - lastSwiped) > 500) {
-            this.swipeActions[swiped](event);
-            lastSwiped = window.performance.now();
-          }
-        }
-      });
-    });
-  }
-  touchEnd = (event) => {
-    // Array.from(event.targetTouches).forEach(function (touch, i) {
-    //   // var duration = this.currentTouches[i].getDuration();
-    //   // var distance = this.currentTouches[i].getDistance();
-    //   // // if (duration <= this.gestures.tap.time
-    //   // //   && distance.x <= this.gestures.tap.distance && distance.y < this.gestures.tap.distance) {
-    //   // //   true;
-    //   // // }
-    //   this.currentTouches.splice(i, 1);
-    // },this);
-    for (var i = 0; i < event.targetTouches.length; i++) {
-      this.currentTouches.splice(i, 1);
+    this.touchStartSection = document.querySelector(`#section-${sectionIndex}`);
+    this.touchStartScrollY = this.touchStartSection.scrollTop;
+  };
+  touchMove = event => {
+    const movingTouch = event.targetTouches[0];
+    const touchCopy = { pageX: Math.round(movingTouch.pageX), pageY: Math.round(movingTouch.pageY) };
+    this.currentTouch.x = touchCopy.pageX;
+    this.currentTouch.y = touchCopy.pageY;    
+    const swiped = this.getSwipe();
+    if (swiped) {
+      const scrolled = this.touchStartSection && this.touchStartSection.scrollTop !== this.touchStartScrollY;
+      if (!scrolled) {
+        this.swipeActions[swiped](event);
+      }
     }
-  }
-  setInputs() {
-    document.body.addEventListener('touchstart', this.touchStart, {passive: false});
-    document.body.addEventListener('touchmove', this.touchMove, {passive: true});
-    document.body.addEventListener('touchend', this.touchEnd, {passive: true});
-    // this.bound = true;
+  };
+
+  touchEnd = () => {
+    if (this.currentTouch) {
+      this.currentTouch = undefined;
+    }
+  };
+  setInputs(el) {
+    el.addEventListener('touchstart', this.touchStart, { passive: true });
+    el.addEventListener('touchmove', this.touchMove, { passive: true });
+    el.addEventListener('touchend', this.touchEnd, { passive: true });
   }
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 
 export const randomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -455,7 +455,7 @@ const adLines = [
   `I was made to understand that there would be grilled cheese sandwiches here`,
   `Will someone please have the decency to punch me in the face?`,
   `Mom always taught us to curl up in a ball and remain motionless when confronted`,
-  `We have unlmited juice?`,
+  `We have unlimited juice?`,
   `You old horny slut`,
   `We all know you're Annyong`,
   `No, Mother, I can blow myself`,
@@ -500,10 +500,81 @@ const Generator = class {
   constructor() {
     this.lines = [...adLines];
     this.indexTotal = this.lines.length - 1;
+    this.usedQuotes = [];
+    this.tempUsedQuotes = [];
   }
 };
-const generator = new Generator();
+export const generator = new Generator();
 
+// options: {
+//   minChars: num
+//   maxChars: num
+//   minWords: num
+//   maxWords: num
+//   noEndPeriod: bool
+//   noEndPunctuation: bool
+//   capitalize: bool
+// }
+export const getQuote = (options={minChars: 0}, useOnce) => {
+  let excludeArray = [...generator.usedQuotes, ...generator.tempUsedQuotes];
+  let quoteArray = generator.lines;
+  if (options.minChars || options.maxChars) {
+    if (!options.minChars) { options.minChars = 0 }
+    if (!options.maxChars) { options.maxChars = 9999}
+    quoteArray = generator.lines.filter(line => line[line.length - 1] !== '?'
+      && line.length >= options.minChars
+      && line.length <= options.maxChars
+      && !excludeArray.includes(line)
+    );
+    if (!quoteArray.length) {
+      return 'ERROR. min/max chars'
+    }
+  }
+  if (options.minWords || options.maxWords) {
+    if (!options.minWords) { options.minWords = 0 }
+    if (!options.maxWords) { options.maxWords = 9999 }
+    let filterArray = quoteArray && quoteArray.length ? quoteArray : generator.lines;
+    quoteArray = filterArray.filter(quote => {
+      let split = quote.split(' ');
+      return split.length >= options.minWords && split.length <= options.maxWords && !excludeArray.includes(quote)
+    });
+    if (!quoteArray.length) {
+      return 'ERROR. min/max words'
+    }
+  }
+  if (options.question) {
+    quoteArray = quoteArray.filter(quote => quote[quote.length - 1] === '?');
+  }
+
+  console.log('options', options, 'choosing from', quoteArray.length);
+  let chosenQuote = quoteArray[randomInt(0, quoteArray.length - 1)];
+  let usedDestination = useOnce ? generator.usedQuotes : generator.tempUsedQuotes;
+
+  usedDestination.push(chosenQuote)
+  let endChar = chosenQuote[chosenQuote.length - 1];
+  let addendum = 
+    !options.noEndPunctuation 
+    && !options.noEndPeriod 
+    && !['.','?','!'].includes(endChar)
+    ? '.' : '';
+  // generator.lines.splice(generator.lines.indexOf(chosenQuote), 1);
+  // if (generator.lines.length === 1) {
+  //   generator.lines = [...adLines];
+  // }
+  // console.warn('removed used line', chosenQuote, 'from generator.lines. length is now', generator.lines.length)
+  if (options.noEndPunctuation && ['?', '!'].includes(endChar)) {
+    chosenQuote = chosenQuote.substr(0, chosenQuote.length - 1)
+  }
+  if (options.capitalize) {
+    let capitalized = '';
+    let split = chosenQuote.split(' ');
+    split.forEach(word => {
+      capitalized += (word[0].toUpperCase() + word.substr(1, word.length - 1)) + ' ';
+    });
+    chosenQuote = capitalized;
+  }
+  return chosenQuote + addendum;
+};
 export const getLine = (maxWords = 5000, minWords = 0, noPunc) => {
   let lineArray = generator.lines.filter(line => {
     let split = line.split(' ');
@@ -511,7 +582,6 @@ export const getLine = (maxWords = 5000, minWords = 0, noPunc) => {
     return allowed;
   });
   let max = lineArray.length - 1;
-  // console.orange('selecting from', max, 'maxWords', maxWords, 'lines.')
   let rando = randomInt(0, max);
   let headline = lineArray[rando];
   let endChar = headline[headline.length - 1];
@@ -561,5 +631,5 @@ export const getParagraph = lineArgs => {
   lineArgs.map(args => {
     paragraph += ' ' + getLine([...args]);
   });
-  return <span>{paragraph}</span>;
+  return paragraph;
 };

@@ -1,12 +1,10 @@
 import React from 'react';
 import styled from 'styled-components/macro';
-require('console-green');
 
 const HamburgerContainer = styled.div`
+  box-sizing: border-box;
   position: absolute;
-  z-index: 12;
   padding: 0;
-  /* padding-top: calc(var(--hamburger-height) * 0.175); */
   right: 0;
   width: var(--hamburger-height);
   height: var(--hamburger-height);
@@ -14,14 +12,15 @@ const HamburgerContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  transform: ${props => props.landed ? 'none' : 'translateY(-10%)'};
-  opacity: ${props => props.landed ? '1' : '0'};
+  transform: ${props => (props.landed ? 'none' : 'translateY(-10%)')};
+  opacity: ${props => (props.landed ? '1' : '0')};
   transition: transform 420ms ease, opacity 420ms ease;
-  transition-delay: 900ms;
+  transition-delay: 300ms;
   padding: calc(var(--header-height) * 0.175);
   margin: calc(var(--header-height) * 0.075);
   margin-top: calc(var(--header-height) * 0.03);
-  z-index: 6;
+  cursor: pointer;
+  z-index: 2;
 
   &.dark::after {
     filter: invert(100%);
@@ -29,7 +28,6 @@ const HamburgerContainer = styled.div`
   &.dark div {
     background-color: var(--off-black);
   }
-
   &::after {
     position: absolute;
     content: 'MENU';
@@ -42,7 +40,10 @@ const HamburgerContainer = styled.div`
   @media screen and (orientation: landscape) {
     right: unset;
     left: calc((100vw - var(--main-width)) / 2);
-    margin: 0;
+    /* margin: 0; */
+    /* width: var(--header-height);
+      padding-left: 1rem;
+      padding-right: 1rem; */
   }
 `;
 // const ScissorArm = styled.img`
@@ -63,7 +64,6 @@ const HamBar = styled.div`
   border-radius: 12%;
   height: calc(var(--header-height) / 18);
   transition: transform 310ms ease;
-  // will-change: transform;
 `;
 const HamBarTop = styled(HamBar)`
   border: none;
@@ -79,7 +79,6 @@ const HamBarBot = styled(HamBar)`
 `;
 
 function Hamburger(props) {
-  // console.count('Hamburger');
   return (
       <HamburgerContainer className={props.dark && 'dark'} {...{ [window.CLICK_METHOD]: props.onHamburgerClick }} showing={!props.landscape} landed={props.landed}>
         <>

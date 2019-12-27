@@ -3,53 +3,55 @@ import styled from 'styled-components/macro';
 require('console-green');
 
 const ImageCarouselContainer = styled.div`
-  /* --image-width: calc(100vw - (var(--header-height) * 2));
-  --image-height: auto; */
-  --image-height: ${props => props.titlePhotoSize.height};
-  --image-width: ${props => props.titlePhotoSize.width};
+  /* --image-width: ${props => props.titlePhotoSize.width};
+  --image-height: ${props => props.titlePhotoSize.height}; */
   width: 100vw;
-  height: 100%;
+  height: min-content;
   color: #ddd;
   display: grid;
   grid-template-columns: var(--header-height) 1fr var(--header-height);
   align-content: center;
   opacity: ${props => (props.landed ? 1 : 0)};
   transform: ${props => (props.landed ? 'scale(1)' : 'scale(0.9)')};
-  transition: transform 500ms ease, opacity 500ms ease;
-  transition-delay: 600ms;
-  
-  @media screen and (orientation: landscape) {
-    max-width: calc(var(--image-width) + (var(--header-height) * 2));
+  transition: transform 500ms ease, opacity 800ms ease;
+  transition-delay: 200ms;
+
+  &.loading {
+    /* opacity: 0; */
   }
-  `;
+  max-width: calc(var(--image-width) + (var(--header-height) * 2));
+
+  @media screen and (orientation: landscape) {
+  }
+`;
 const ImageContainer = styled.div`
-  width: var(--image-width);
-  height: auto;
+  /* max-height: 100%; */
+  width: 100%;
   color: #ddd;
   display: flex;
   align-items: center;
-  /* overflow-x: hidden; */
+  align-self: start;
+  
   transform: translateX(calc(var(--image-width) * ${props => props.imageSelected * -1}))};
   transition: transform 500ms ease, opacity 500ms ease;
-  
-  @media screen and (orientation: landscape) {
-  }
-  `;
-const TitlePhoto = styled.img`
+`;
+const TitlePhoto = styled.div`
   width: var(--image-width);
-  height: auto;
+  height: var(--image-height);
   border-radius: var(--card-radius);
-  box-shadow: 0 0.1rem 0.25em #00000066, 0 0px 0 1px #00000066;
-  
-  opacity: ${props => props.selected ? 1 : 0};
-  transform: ${props => props.selected ? 'scale(1)' : 'scale(0.7)'};
+  opacity: ${props => (props.selected ? 1 : 0)};
+  transform: ${props => (props.selected ? 'scale(1)' : 'scale(0.85)')};
   transition: transform 300ms ease, opacity 300ms ease;
-
+  box-shadow: 0 0 12px #101010;
+  box-sizing: border-box;
   & .selected {
     opacity: 1;
   }
+  @media screen and (orientation: landscape) {
+  }
 `;
 const Arrow = styled.div`
+  box-sizing: border-box;
   width: 0;
   height: 0;
   border-left: 1.5rem solid rgba(255,255,255,0);
@@ -83,7 +85,7 @@ const ArrowPanel = styled.div`
   font-size: 8vw;
   color: #ffffff55;
   pointer-events: all;
-  z-index: 2;
+  z-index: 1;
   opacity: ${props => props.showing ? 1 : 0};
   pointer-events: ${props => props.showing ? 'all' : 'none'};
   transition: opacity 500ms ease;
@@ -96,9 +98,12 @@ const ArrowPanel = styled.div`
 function ImageCarousel(props) {
   const [imageSelected, setImageSelected] = useState(0);
   useEffect(() => {
+    // document.getElementById('title-carousel').classList.remove('loading');
+  }, []);
+  useEffect(() => {
     props.touchHandler.swipeActions.west = (e) => {
       let currentImage = parseInt(e.target.id.split('-')[2]);
-      if (currentImage < props.images.length - 1) {
+      if (currentImage < props.imageList.length - 1) {
         setImageSelected(currentImage + 1);
       }
     }
@@ -110,33 +115,43 @@ function ImageCarousel(props) {
     }
   }, [props.touchHandler]);
 
-  return (    
-    <ImageCarouselContainer titlePhotoSize={props.titlePhotoSize} imageSelected={imageSelected} landed={props.landed}>
-      <ArrowPanel
-        showing={imageSelected > 0}
-        onPointerDown={() => {
-          setImageSelected(imageSelected - 1);
-        }}
-      >
+  return (
+    <ImageCarouselContainer id='title-carousel' titlePhotoSize={props.titlePhotoSize} imageSelected={imageSelected} landed={props.landed} className='loading'>
+      <ArrowPanel showing={imageSelected > 0} {...{ [window.CLICK_METHOD]: () => setImageSelected(imageSelected - 1) }}>
         <LeftArrow landed={props.landed} />
       </ArrowPanel>
       <div></div>
       <ImageContainer imageSelected={imageSelected}>
-        {props.images.map((image, i) => 
-          <TitlePhoto id={`title-photo-${i}`} key={i} src={image} selected={imageSelected === i} />
-        )}
+        {props.imageList.map((image, i) => {
+          if (i === 0 || props.lazyLoaded) {
+          return (<TitlePhoto
+            id={`title-photo-${i}`}
+            key={i}
+            style={{
+              backgroundImage: `url('${image.url}')`,
+              backgroundPositionX: image.crop.x,
+              backgroundPositionY: image.crop.y,
+              backgroundSize: 'cover'
+            }}
+            selected={imageSelected === i}
+          />)
+          }
+        })}
       </ImageContainer>
       <div></div>
-      <ArrowPanel
-        showing={imageSelected < props.images.length - 1}
-        onPointerDown={() => {
-          setImageSelected(imageSelected + 1);
-        }}
-      >
+      <ArrowPanel showing={imageSelected < props.imageList.length - 1} {...{ [window.CLICK_METHOD]: () => setImageSelected(imageSelected + 1) }}>
         <RightArrow landed={props.landed} />
       </ArrowPanel>
     </ImageCarouselContainer>
   );
 }
 
-export default React.memo(ImageCarousel);
+function areEqual(prevProps, nextProps) {
+  let equal =
+    prevProps.landed === nextProps.landed
+    && prevProps.lazyLoaded === nextProps.lazyLoaded
+  ;
+  return equal;
+}
+
+export default React.memo(ImageCarousel, areEqual);

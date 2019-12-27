@@ -22,11 +22,3 @@
   height: 100%;
   width: auto;
 }
-.scroll-panel-container.leaving * {
-  transition-duration: 0ms !important;
-  /* opacity: 1 !important; */
-  /* transform: none !important; */
-}
-.scroll-panel-container.instant * {
-  transition-delay: 0ms !important;
-}

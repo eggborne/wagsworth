@@ -2,8 +2,9 @@ import React, { useEffect, useState, useCallback } from "react";
 import styled from "styled-components/macro";
 import AccordianSet from './AccordianSet.jsx';
 import {DownArrow} from '../App.js';
+import { randomInt, getQuote } from '../scripts/quotes.js';
 
-// import "./ScrollPanel.css";
+// import "./FilledScrollPanel.css";
 
 let swipeToScroll = true;
 let shiftSpeed = 420;
@@ -12,9 +13,12 @@ let shiftSpeed = 420;
 const borderUrl = require("../assets/borders/pawprintborder.png");
 
 // const googleMapHTML = `<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2801.544366522556!2d-122.7430284839197!3d45.39836124585416!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x549572e65fe21c41%3A0x419967e7f5602b9c!2sThe%20Scooby%20Shack!5e0!3m2!1sen!2sus!4v1573525146909!5m2!1sen!2sus" frameborder="0" style="border:0;" allowfullscreen></iframe>`
-const googleMapUrl = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d178936.0853006728!2d-122.86713118207858!3d45.51256804064862!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x549572e65fe21c41%3A0x419967e7f5602b9c!2sThe%20Scooby%20Shack!5e0!3m2!1sen!2sus!4v1575891664169!5m2!1sen!2sus`;
+let googleMapUrl = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d178936.0853006728!2d-122.86713118207858!3d45.51256804064862!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x549572e65fe21c41%3A0x419967e7f5602b9c!2sThe%20Scooby%20Shack!5e0!3m2!1sen!2sus!4v1575891664169!5m2!1sen!2sus`;
+if (window.FILL_FIELDS) {
+  googleMapUrl = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d826.2231081929783!2d-118.401788270736!3d34.072271609666956!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c2bc06fc44af25%3A0xfe38f831b8cb930a!2s9390%20N%20Santa%20Monica%20Blvd%2C%20Beverly%20Hills%2C%20CA%2090210!5e0!3m2!1sen!2sus!4v1577345192150!5m2!1sen!2sus`;
+}
 
-const SectionContainer = styled.section`  
+const FilledSectionContainer = styled.section`  
   box-sizing: content-box;
   width: 100%;
   position: relative;
@@ -31,7 +35,7 @@ const SectionContainer = styled.section`
   align-items: center;
   font-size: var(--main-font-size);
   color: #ddd;
-  font-family: var(--title-font);
+  font-family: var(--main-font);
   pointer-events: none;
   box-shadow: 0 0 2px solid black !important;
   /* overflow: hidden; */
@@ -123,6 +127,7 @@ const SectionTitle = styled.header`
   transform: ${props => (props.arrived ? 'none' : 'scale(1.2)')};
   text-align: center;
   /* color: var(--title-text-color); */
+  font-family: var(--title-font);
   font-size: var(--title-font-size);
   font-size: ${props => (props.long ? 'calc(var(--title-font-size) / 1.25)' : 'var(--title-font-size)')};
   /* font-size: var(--title-font-size); */
@@ -164,6 +169,7 @@ const SectionHeadline = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  align-self: center;
   text-align: center;
   width: max-content;
   height: calc(var(--header-height) * 1.25);
@@ -224,8 +230,6 @@ const SectionBody = styled.div`
 const BodyScrollContainer = styled.div`
   display: flex;
   flex-direction: column;
-  align-self: stretch;
-  width: 100%;
   height: ${props =>
     props.last
       ? `calc(
@@ -269,18 +273,18 @@ const ServiceCard = styled.div`
   border-radius: var(--card-radius);
   border: 1px solid #00000230;
   box-shadow: var(--med-box-shadow);
-
+  
   & > .card-top {
     grid-column-end: span 2;
     justify-self: stretch;
     display: flex;
     align-items: center;
   }
-
+  
   & > .card-top > div:first-of-type {
     /* margin-right: calc(var(--section-height) / 24); */
   }
-
+  
   & > .card-top > .card-headline {
     flex-grow: 1;
     margin: 0;
@@ -288,7 +292,6 @@ const ServiceCard = styled.div`
     line-height: 100%;
     line-height: calc(var(--main-font-size) * 1.75);
     padding-left: 1rem;
-
   }
 
   & .card-body {
@@ -323,11 +326,14 @@ const TextBody = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  
   width: var(--main-width);
   font-size: calc(var(--main-font-size) * 1.1);
+
   &.faq-text-body {
     padding-top: 0;
+  }
+  & p {
+    align-self: stretch;
   }
   &.requirements-text-body {
     
@@ -342,7 +348,8 @@ const TextBody = styled.div`
     margin-bottom: 1.5rem;
     border-radius: var(--card-radius);
     font-family: var(--main-font);
-    min-width: 100%;
+    width: 100%;
+    color: #101010;
     opacity: 0;
     transform: scale(0.95);
     transition: transform 600ms ease, opacity 600ms ease;
@@ -378,7 +385,6 @@ const SectionText = styled.summary`
 
   & > p {
     margin-top: 0;
-    align-self: stretch;
   }
   @media screen and (orientation: landscape) {
     /* padding-left: calc(var(--main-width) / 12);
@@ -397,6 +403,7 @@ const ServiceTable = styled(ServiceCard)`
   
   & > div {
     display: flex;
+    align-items: center;
     justify-content: space-between;
     padding: var(--main-padding);
     font-weight: bold;
@@ -507,12 +514,13 @@ const ContactTable = styled.div`
     transform: scale(0.85);
   }
   @media screen and (orientation: landscape) {
+    padding: calc(var(--section-height) / 20);
     width: var(--main-width);
     height: 100%;
     grid-template-columns: auto 1fr;
     grid-template-rows: auto auto 1fr;
-    max-height: 100%;
-    padding: calc(var(--section-height) / 20);
+      max-height: 100%;
+
 
     & > .contact-row {
       grid-column-start: 1;
@@ -568,6 +576,7 @@ const BottomPanel = styled.div`
   pointer-events: ${swipeToScroll ? 'all' : 'none'};
   transition: opacity 600ms ease;
   z-index: 6;
+  font-family: var(--title-font);
 
   /* ${props => props.last && 'visibility: hidden; height: 0 !important;'} */
   ${props => props.last && 'display: none'}
@@ -578,7 +587,7 @@ const BottomPanel = styled.div`
 `;
 const PanelDownArrow = styled(DownArrow)`
   & ::before {
-    content: '${props => props.nextSectionTitle}';
+    content: "${props => props.nextSectionTitle}";
   }
 `;
 const LeftArrowPanel = styled.div`
@@ -656,35 +665,33 @@ const LoadingIcon = styled.div`
 `;
 
 
-function ScrollPanel(props) {
+function FilledScrollPanel(props) {
+  const [displayData, setDisplayData] = useState(props.sectionData);
   const [arrived, setArrival] = useState(false);
   const [debuted, setDebuted] = useState(false);
   const [transition, setTransition] = useState("in");
   const [slideShowing, setSlide] = useState(0);
   const [atEnd, setAtEnd] = useState('top');
-  // useEffect(() => {
-  //   if (props.sectionData.phone) {
-  //     let contactEl = document.getElementById('contact-table');
-  //     let coords = props.sectionData.addressCoords;
-  //     const userMap = window.USER_MAP.map('user-map', {
-  //       center: [parseFloat(coords.y), parseFloat(coords.x)],
-  //       zoom: 16,
-  //       // attributionControl: false
-  //     });
-  //     window.USER_MAP.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}@2x?access_token={accessToken}', {
-  //       maxZoom: 20,
-  //       attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-  //       id: 'mapbox/streets-v11',
-  //       accessToken: 'pk.eyJ1IjoiZWdnYm9ybmUiLCJhIjoiY2szeTBmaGpwMTJjaTNudDhjN2F5anQzbCJ9.PpfYrXsrClxNcn6Ky3_cxQ'
-  //     }).addTo(userMap);
-  //     window.USER_MAP.marker([parseFloat(coords.y), parseFloat(coords.x)], {
-  //       title: 'Wagsworth Grooming'
-  //     })
-  //       .addTo(userMap)
-  //       .bindPopup('<b>BLEEARRGH</b>');
-  //     // userMap.locate({ setView: true, maxZoom: 16 });
-  //   }
-  // }, []);
+  const replenishFiller = () => {
+    let newDisplayData = { ...props.sectionData };
+    // newDisplayData.title = getQuote({
+    //   minWords: 0,
+    //   maxWords: 3,
+    //   // noEndPeriod: true
+    // });
+    for (let category in newDisplayData) {
+      // console.log('cat is', category);
+      // console.log(category, 'value is', newDisplayData[category]);
+      // console.warn('----------------------------')
+    }
+    // console.log('new is', newDisplayData)
+    setDisplayData(newDisplayData);
+  }
+  useEffect(() => {
+    if (props.sectionData) {
+      replenishFiller();    
+    }
+  }, [props.sectionData, arrived]);
   useEffect(() => {
     if (props.landed) {
       if (!props.mapLoaded && props.lastSection) {
@@ -697,6 +704,7 @@ function ScrollPanel(props) {
           });
         });
       }
+      
       props.sectionData.ref.current.scrollTo({
         top: 0
       });
@@ -728,17 +736,19 @@ function ScrollPanel(props) {
   if (props.instant || Math.abs(props.lastPhase - props.phase) > 1) {
     containerClass += " instant";  
   }
-  // let fadeEdges = props.sectionData.pricedServices || props.sectionData.type === 'faq' || props.sectionData.type === 'req' || props.title === 'About Me';
+  // let fadeEdges = props.sectionData.pricedServices || props.sectionData.type === 'faq' || props.sectionData.type === 'req' || displayData.title === 'About Me';
   let fadeEdges = !props.lastSection;
+  const sectionDisplayData = displayData;
+  // console.log('filled scroll panel', props.index, 'has displaysata', displayData)
   return (
-    <SectionContainer scrollable={props.scrollable} arrived={arrived} landed={props.landed} title={props.sectionData.title} fadeEdges={fadeEdges} style={props.style} className={containerClass}>
-      <SectionTitle arrived={arrived} landed={props.landed} last={props.lastSection} long={props.title.length > 11}>
-        {props.title}
+    <FilledSectionContainer scrollable={props.scrollable} arrived={arrived} landed={props.landed} title={sectionDisplayData.title} fadeEdges={fadeEdges} style={props.style} className={containerClass}>
+      <SectionTitle arrived={arrived} landed={props.landed} last={props.lastSection} long={displayData.title.length > 11}>
+        {displayData.title}
       </SectionTitle>
       <BodyScrollContainer
         id={`section-${props.index}`}
-        sectionData={props.sectionData}
-        ref={props.sectionData.ref}
+        sectionData={sectionDisplayData}
+        ref={sectionDisplayData.ref}
         // style={{ transform: `translateX(${slideShowing * -window.innerWidth}px)` }}
         slides={props.slides}
         bgColor={props.style.backgroundColor}
@@ -747,20 +757,20 @@ function ScrollPanel(props) {
         >
         {/* {(props.landed || (props.lastSection && debuted)) && */}
         {true &&
-          props.slides &&
-          props.slides.map((slide, i) =>
-          props.sectionData.type === 'faq' ? (
+          sectionDisplayData.slides &&
+          sectionDisplayData.slides.map((slide, i) =>
+          sectionDisplayData.type === 'faq' ? (
             <TextBody className='faq-text-body' key={'body' + i}>
             {props.faqs && <SectionHeadline arrived={arrived}>Frequently Asked Questions</SectionHeadline>}
-            <AccordianSet sectionRef={props.sectionData.ref} instant={props.instant} inView={props.landed && !props.menuOn} type='faqs' items={props.faqs} />
+            <AccordianSet sectionRef={sectionDisplayData.ref} instant={props.instant} inView={props.landed && !props.menuOn} type='faqs' items={props.faqs} />
             </TextBody>
-            ) : props.sectionData.type === 'req' ? (
+            ) : sectionDisplayData.type === 'req' ? (
               <TextBody className='requirements-text-body' key={'body' + i}>
-                  <div style={{ color: props.sectionData.style.color }} className={arrived ? 'requirements-note arrived' : 'requirements-note'}>{props.sectionData.legend}</div>
+                  <div style={{ color: props.sectionData.style.color }} className={arrived ? 'requirements-note arrived' : 'requirements-note'}>{sectionDisplayData.legend}</div>
                 {props.requirements
                   .filter((req, f) => req.headline && req.bodyText)
                   .map((pair, p) => (
-                    <RequirementSet bgColor={props.sectionData.style.backgroundColor} textColor={props.sectionData.style.color} arrived={arrived} key={(i + 1) * p}>
+                    <RequirementSet bgColor={sectionDisplayData.style.backgroundColor} textColor={sectionDisplayData.style.color} arrived={arrived} key={(i + 1) * p}>
                       <div className='question'>{pair.headline}</div>
                       <div className='answer'>
                         {pair.bodyText.map((paragraph, r) =>
@@ -777,7 +787,7 @@ function ScrollPanel(props) {
                     </RequirementSet>
                   ))}
               </TextBody>
-            ) : props.sectionData.pricedServices ? (
+            ) : sectionDisplayData.pricedServices ? (
               <SectionBody className={'services'} key={i}>
                 <ServiceCard iconFilters={props.style.iconFilters} style={{ backgroundColor: slide.bgColor }}>
                   <div className='card-top'>
@@ -842,20 +852,20 @@ function ScrollPanel(props) {
               </TextBody>
             )
           )}
-        {props.sectionData.pricedServices && (
+        {sectionDisplayData.pricedServices && (
           <SectionBody className='services'>
             <div className='service-label'>A La Carte</div>
             <ServiceTable>
-              {props.sectionData.pricedServices.map(service => (
+              {sectionDisplayData.pricedServices.map(service => (
                 <div key={service.name}>
                   <div>{service.name}</div>
                   <div>{service.price}</div>
                 </div>
               ))}
             </ServiceTable>
-            <div style={{ color: props.sectionData.style.color }} className='service-note'>
+            <div style={{ color: sectionDisplayData.style.color }} className='service-note'>
               <span style={{ fontWeight: 'bold' }}>Note: </span>
-              {props.sectionData.note}
+              {sectionDisplayData.note}
             </div>
           </SectionBody>
         )}
@@ -865,7 +875,7 @@ function ScrollPanel(props) {
           {props.nextSectionTitle && <PanelDownArrow landed={props.landed} nextSectionTitle={props.nextSectionTitle} arrived={arrived} />}
         </BottomPanel>
       )}
-    </SectionContainer>
+    </FilledSectionContainer>
   );
 }
 
@@ -874,10 +884,12 @@ function areEqual(prevProps, nextProps) {
   let equal =
     nextProps.phase !== index
     && prevProps.phase !== index
+    && prevProps.sectionData === nextProps.sectionData
+    // && prevProps.nextSectionTitle === nextProps.nextSectionTitle
     // && prevProps.landed === nextProps.landed
     // && prevProps.instant === nextProps.instant
   ;
   return equal;
 }
-export default React.memo(ScrollPanel, areEqual);
-// export default ScrollPanel;
+export default React.memo(FilledScrollPanel, areEqual);
+// export default FilledScrollPanel;

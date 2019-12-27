@@ -62,7 +62,7 @@ class Touch {
 }
 export class TouchHandler {
   constructor() {
-    console.big('TTTTOOOOUUUCCCHHHHHANNNDDDLEERR');
+    console.big('>>>>>>> TOUCHHANDLER instance created.');
     this.bound = false;
     this.currentTouches = [];
     this.currentTouch = undefined;

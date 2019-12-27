@@ -1,55 +1,51 @@
 import React from 'react';
 import styled from 'styled-components/macro';
-require('console-green');
+import { generator } from '../scripts/quotes.js';
+
+const facebookIcon = require(`../assets/icons/facebookicon.png`);
+const instagramIcon = require(`../assets/icons/instagramicon.png`);
+const twittericon = require(`../assets/icons/twittericon.png`);
+const pinteresticon = require(`../assets/icons/pinteresticon.png`);
+
 
 const FooterContainer = styled.footer`
+  position: absolute;
+  bottom: 0;
+  box-sizing: border-box;
   align-self: stretch;
   font-family: var(--main-font), sans-serif;
   width: var(--main-width);
-  height: var(--footer-height);
+  min-height: var(--footer-height);
   color: #ddd;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
-  background-color: var(--header-color);
-  box-shadow: var(--footer-shadow);
+  background-color: ${props => (props.phase > 0 ? '#101010' : 'transparent')};
+  box-shadow: var(--header-shadow);
+  transition: background-color calc(var(--shift-speed) / 2) ease;
+  /* padding: 0 calc(var(--footer-height) / 4); */
+  z-index: 2;
 
-  z-index: 0;
-  
   & a {
     color: #ddd;
   }
-  & > .social-area {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: var(--header-text-color);
-    
-    animation: pulse-text-wide infinite 2s ease;
-    animation-play-state: running;
-    animation-direction: alternate-reverse;
-  }
-  & > .social-area > div:first-child {
+
+  & > .follow-label {
     font-weight: bold;
+    font-family: sans-serif;
     font-size: 1rem;
-    padding-bottom: 0.5rem;
+    animation: pulse-text-wide infinite 2s ease;
   }
   @media screen and (orientation: landscape) {
     position: fixed;
     flex-direction: row;
-    align-items: flex-end;
-    padding: calc(var(--footer-height) / 6);
-    justify-content: space-between;
+    justify-content: flex-start;
     bottom: 0;
-    z-index: 4;
+    padding: 0 calc(var(--footer-height) / 4);
     box-shadow: none;
 
-    & > div:first-child {
-      flex-direction: row;
-    }
-    & > .social-area > div:first-child {
-      padding-bottom: 0;
+    & > .follow-label {
       padding-right: calc(var(--footer-height) / 6);
     }
   }
@@ -59,23 +55,16 @@ const LowerFooter = styled.div`
   bottom: 0;
   font-family: var(--main-font), sans-serif;
   font-size: 0.8rem;
-  /* opacity: 0.8; */
-  width: 100%;
   color: #ddd;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
-  justify-self: flex-end;
   white-space: pre;
-  z-index: 2;
   & a {
     color: #dddddd88;
   }
   @media screen and (orientation: landscape) {
-    width: unset;
+    flex-grow: 1;
+    text-align: right;
   }
-  `;
+`;
 
 const SocialIcons = styled.div`
   display: flex;
@@ -86,17 +75,16 @@ const SocialIcons = styled.div`
   }
   & img {
     padding: 0 2vmin;
-    /* padding-bottom: 0; */
-    height: calc(var(--header-height) / 1.75);
+    height: calc(var(--footer-height) / 3);
     animation: wave 1200ms infinite ease;
     animation-direction: alternate;
-    animation-play-state: '${props => props.showing ? 'playing' : 'paused'}'
+    animation-play-state: ${props => props.pulsing ? 'running' : 'paused'}
   }
   & a > #fb {
-    animation-delay: 200ms !important;
+    animation-delay: 200ms;
   }
   & a > #insta {
-    animation-delay: 400ms !important;
+    animation-delay: 400ms;
   }
   & a > #twit {
     animation-delay: 600ms;
@@ -113,28 +101,32 @@ const SocialIcons = styled.div`
 `;
 
 function Footer(props) {
-  const facebookIcon = require(`../assets/icons/facebookicon.png`);
-  const instagramIcon = require(`../assets/icons/instagramicon.png`);
-  const twittericon = require(`../assets/icons/twittericon.png`);
-  const pinteresticon = require(`../assets/icons/pinteresticon.png`);
+  let attribution = `© ${new Date().getFullYear()} Wagsworth Grooming`;
+  if (window.GUEST_MODE) {
+    attribution = `${generator.lines.length} lines in database`
+  }
+  console.log('props is', props)
   return (
-    <FooterContainer>
-      <div className='social-area'>
-        <div>FOLLOW US</div>
-        <SocialIcons>
-          <a href='https://www.facebook.com/Wagsworth-Grooming-367796550610944' target='blank'>
-            <img id='fb' src={facebookIcon} />
-          </a>
-          <a href='https://instagram.com/wagsworths' target='blank'><img id='insta' src={instagramIcon} /></a>
-          <a href='https://twitter.com/wagsworths' target='blank'><img id='twit' src={twittericon} /></a>
-          <a href='https://pinterest.com/wagsworths' target='blank'><img id='pint' src={pinteresticon} /></a>
-        </SocialIcons>
-      </div>
+    <FooterContainer phase={props.phase}>
+      <span className='follow-label'>FOLLOW US</span>
+      {props.socialUrls && <SocialIcons pulsing={props.pulsing}>
+        <a href={props.socialUrls[0]} target='blank'><img alt='' id='fb' src={facebookIcon} /> </a>
+        <a href={props.socialUrls[1]} target='blank'><img alt='' id='insta' src={instagramIcon} /></a>
+        <a href={props.socialUrls[2]} target='blank'><img alt='' id='twit' src={twittericon} /></a>
+        <a href={props.socialUrls[3]} target='blank'><img alt='' id='pint' src={pinteresticon} /></a>
+      </SocialIcons>}
       <LowerFooter>
-        <small>© {new Date().getFullYear()} Wagsworth Grooming  |  Website by <a href='https://mikedonovan.dev'>mikedonovan.dev</a></small>
+        <small>{attribution}  |  Website by <a href='https://mikedonovan.dev'>mikedonovan.dev</a></small>
       </LowerFooter>
     </FooterContainer>
   );
 }
 
-export default React.memo(Footer);
+const areEqual = (prevProps, nextProps) => {
+  let equal = prevProps.phase === nextProps.phase ||
+    (prevProps.phase !== 0 && prevProps.phase !== 4 && nextProps.phase !== 0 && nextProps.phase !== 4)
+    ;
+  return equal;
+}
+export default React.memo(Footer, areEqual);
+// export default Footer;

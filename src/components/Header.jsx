@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components/macro';
 import { randomInt } from '../scripts/quotes.js';
-require('console-green');
 
 
 const HeaderContainer = styled.header`
@@ -19,9 +18,11 @@ const HeaderContainer = styled.header`
   /* justify-content: flex-start; */  
   align-items: center;
   z-index: 2;
-  background-color: ${props => (props.phase === 0) ? 'transparent' : '#101010'};
-  background-color: ${props => (props.phase === 0) ? 'transparent' : props.headerColor};
-  transition: background-color calc(var(--shift-speed) / 2) ease;
+  background-color: ${props => (props.menuOn || props.phase === 0) ? 'transparent' : '#101010'};
+  background-color: ${props => (props.menuOn || props.phase === 0) ? 'transparent' : props.headerColor};
+  /* transition: background-color calc(var(--shift-speed)) ease; */
+  transition-duration: ${props => (props.menuOn || props.phase === 0 || props.phase === 1) ? 'calc(var(--shift-speed) / 2)' : '0ms'};
+  transition-delay: ${props => (props.menuOn || props.phase === 0) ? 'calc(var(--shift-speed) / 4)' : '0ms'};
   ${props =>
     props.showShadow
       ? `box-shadow: var(--header-shadow);`
@@ -126,6 +127,7 @@ const EmailLink = styled(PhoneNumber)`
   }
 `;
 const LogoContainer = styled.div`
+
   width: var(--logo-width);
   margin-left: calc(var(--header-height) * 0.1);
   ${props => (props.pageLoaded ? `transform-origin: top left;` : `transform-origin: 50% 50%;`)}
@@ -160,19 +162,43 @@ const MainLogo = styled.img`
   max-width: var(--logo-width);
   transition: transform 600ms ease, opacity 620ms ease;
 `;
+const MainTextLogo = styled.div`
+  position: absolute;
+  width: var(--logo-width);
+  max-width: var(--logo-width);
+  height: calc(var(--logo-width) * 0.32);
+  transition: transform 600ms ease, opacity 620ms ease;
+
+  &::after {
+    position: absolute;
+  }
+  &:nth-child(2)::after {
+    font-family: 'Berkshire Swash';
+    content: 'Fancy';
+    font-size: calc(var(--logo-width) * 0.25);
+  }
+  &:nth-child(3)::after {
+    font-family: var(--main-font);
+    content: 'website';
+    font-size: calc(var(--logo-width) * 0.1);
+    bottom: 0;
+    right: 0;
+  }
+`;
 const Wagsworth = styled(MainLogo)`
   /* z-index: 3; */
 `;
 const Grooming = styled(MainLogo)`
-  ${props =>
-    props.showing
-      ? `opacity: 1; 
-    transform: none;`
-      : `opacity: 0 !important;
-     transform: translateX(4%);`}
-  transition: transform 600ms ease, opacity 600ms ease;
-  transition-delay: 900ms !important;
-  /* z-index: 6; */
+${props =>
+  props.showing ? 
+  `opacity: 1; 
+  transform: none;`
+  : 
+  `opacity: 0 !important;
+  transform: translateX(4%);`
+}
+transition: transform 600ms ease, opacity 600ms ease;
+transition-delay: 900ms !important;
 `;
 const Dog = styled.div`
   animation: wag 90ms infinite;
@@ -211,7 +237,7 @@ function Header(props) {
       requestAnimationFrame(() => {
         setPageLoaded(true);
       })
-    }, 600)
+    }, 1000)
   }, []);
   const handleDogClick = () => {
     if (props.menuOn) {
@@ -247,7 +273,7 @@ function Header(props) {
         <Wagsworth src={props.logoPieces.wagsworthLogo} showing={props.landed} collapsed={props.collapsed} />
         <Grooming src={props.logoPieces.groomingLogo} showing={props.landed} collapsed={props.collapsed} />
       </LogoContainer>
-      <a href={`tel:+1-${props.contactInfo.phone}`}>
+      <a href={(window.FILL_FIELDS || window.GUEST_MODE) ? null : `tel:+1-${props.contactInfo.phone}`}>
         <PhoneNumber showing={props.landed} className={linkClass}>
           <div>{props.contactInfo.phoneString}</div>
           <img className='header-icon' alt='' src={phoneIcon} />

@@ -3,14 +3,15 @@
   --title-font: 'Berkshire Swash'; */
   --border-radius: 1vmin;
 
-  
   --background-image: url('./assets/background3.jpg');
-  --background-image-size: auto 109%;
+  /* --background-image-size: auto 109%; */
+  /* --background-image-width: auto;
+  --background-image-height: 109%; */
+  /* --background-opacity: 1; */
   --header-color: #070707;
-  --background-opacity: 1;
 
   --main-font: 'Prompt', sans-serif;
-  --title-font: 'Berkshire Swash';
+  --title-font: 'Berkshire Swash', sans-serif;
   
   --main-font-size: 1rem;
   --title-font-size: calc(var(--main-font-size) * 2.15);
@@ -113,6 +114,9 @@ body {
 body.loading::before {
   opacity: 0;
 }
+body.background-pending::before {
+  opacity: 0;
+}
 body::before {
   content: '';
   position: absolute;
@@ -125,9 +129,11 @@ body::before {
   pointer-events: none;
   z-index: 0;
   background-image: var(--background-image);
-  background-size: var(--background-image-size);
+  /* background-size: var(--background-image-size); */
+  background-size: var(--background-image-width) var(--background-image-height);
   background-position: center;
   background-repeat: no-repeat;
+  background-clip: var(--header-height);
   transition: opacity 500ms ease;
   transition-delay: 500ms;
 }

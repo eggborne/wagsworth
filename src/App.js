@@ -18,27 +18,36 @@ const ScrollPanel = React.lazy(() => import('./components/ScrollPanel'));
 const FilledScrollPanel = React.lazy(() => import('./components/FilledScrollPanel'));
 // const Menu = React.lazy(() => import('./components/Menu'));
 
+document.title = 'Wagsworth Grooming | Professional Dog Grooming in Tualatin, Oregon';
 window.TEST_MODE = process.env.NODE_ENV === 'development';
-window.GUEST_MODE = 
-(window.location.href.indexOf('fancy') > -1 || window.location.hostname.indexOf('fancy') > -1)
-|| (window.TEST_MODE && window.location.href.indexOf('Guest-') > -1)
-;
-window.STAGING_MODE = window.GUEST_MODE || window.TEST_MODE 
-|| window.location.href.indexOf('eggborne.com/wag') > -1 || window.location.hostname.indexOf('eggborne.com/wag') > -1;
-if (window.GUEST_MODE) {
+
+window.TEST_MODE = false;
+
+// 'signed in' as guest from CMS window
+window.GUEST_MODE = window.location.href.indexOf('Guest-') > -1 || window.location.search.indexOf('Guest-') > -1;
+
+// is Susan editing window from CMS
+window.STAGING_MODE = window.location.href.indexOf('eggborne.com/wag') > -1 || window.location.hostname.indexOf('eggborne.com/wag') > -1;
+
+// determined later by checking for token in URL
+window.EDIT_MODE = false;
+
+window.FILL_FIELDS = (window.location.href.indexOf('fancy') > -1 || window.location.hostname.indexOf('fancy') > -1);
+
+if (window.GUEST_MODE || window.FILL_FIELDS) {
   document.title = 'Fancy Website';
 } else if (window.STAGING_MODE) {
   document.title = 'STAGING AREA | NOT LIVE';
+} else if (window.location.href.indexOf('wagsworthgrooming.com') > -1 || window.location.hostname.indexOf('wagsworthgrooming.com') > -1) {
+  window.LIVE = true;
 }
 
-// window.TEST_MODE = false;
-let lastDefaultWheelAction = 0;
+
+
 let editOrigin = window.TEST_MODE ? 'http://localhost:3001' : 'cms.eggborne.com';
+let lastDefaultWheelAction = 0;
 let editorData;
 
-window.EDIT_MODE = false;
-
-window.FILL_FIELDS = window.GUEST_MODE && (window.location.href.indexOf('fancy') > -1 || window.location.hostname.indexOf('fancy') > -1);
 const fillSection = (sectionIndex, newSections) => {
   generator.tempUsedQuotes.length = 0;
   if (sectionIndex === 'titles') {
@@ -46,7 +55,7 @@ const fillSection = (sectionIndex, newSections) => {
       console.log('sec', sec)
       let newQuote = getQuote({
         minChars: 0,
-        maxChars: 24,
+        maxChars: 22,
         maxWords: 5,
         noEndPunctuation: true,
         capitalize: true
@@ -321,14 +330,14 @@ function adjustToSize() {
 
   let logoPath = `./assets/logosegments`;
 
-  if (!window.GUEST_MODE) {
+  if (window.GUEST_MODE || window.FILL_FIELDS) {
+    wagsworthLogo = require(`${logoPath}/fancy1200${imageExt}`);
+    groomingLogo = require(`${logoPath}/website1200${imageExt}`);
+  } else {
     wagsworthLogo = require(`${logoPath}/wagsworthwhite${logoWidth}${imageExt}`);
     groomingLogo = require(`${logoPath}/groomingwhite${logoWidth}${imageExt}`);
     dogHeadLogo = require(`${logoPath}/dogheadwhite${logoWidth}${imageExt}`);
     monocleLogo = require(`${logoPath}/monocleblack${logoWidth}${imageExt}`);
-  } else {
-    wagsworthLogo = require(`${logoPath}/fancy1200${imageExt}`);
-    groomingLogo = require(`${logoPath}/website1200${imageExt}`);
   }
 
   document.documentElement.style.setProperty('--logo-width', `${logoDisplayWidth}px`);
@@ -393,6 +402,7 @@ const MainContainer = styled.div`
   justify-content: space-between;
   overflow: hidden;
   overscroll-behavior: none;
+ 
 
   @media screen and (orientation: landscape) {
     align-items: center;
@@ -414,6 +424,10 @@ const SectionScrollContainer = styled.div`
   transform: translateY(-${props => sectionHeight * props.phase}px);
   will-change: transform;
   opacity: ${props => (props.menuOn ? 0 : 1)};
+  /* position: absolute; */
+  /* max-height: calc(var(--view-height) - var(--header-height)); */
+  /* margin-bottom: var(--header-height); */
+  /* top: var(--header-height); */
 
   ${props => props.animating && 'transition: transform var(--shift-speed) ease, opacity var(--shift-speed) ease'};
 
@@ -473,17 +487,18 @@ const IntroMessage = styled.div`
     color: var(--header-text-color);
     /* text-shadow: 1px 1px 1px #00000022, -1px 1px 1px #00000022, 1px -1px 1px #00000022, -1px -1px 1px #00000022; */
 
-    ${props =>
-      props.landed &&
-      `animation: pulse-text-wide infinite 5s ease;
-      animation-direction: alternate-reverse;`}
+    ${props => props.landed && `
+      animation: pulse-text-wide infinite 5s ease;
+      animation-direction: alternate-reverse;
+    `}
     font-size: 1.25rem;
     opacity: ${props => (props.landed ? '1' : '0')};
-    transform: ${props => (props.landed ? 'none' : 'translateX(-4vmin)')};
+    /* transform: ${props => (props.landed ? 'none' : 'translateX(-4vmin)')}; */
+    transform: ${props => (props.landed ? 'none' : 'scale(1.2)')};
     transition: transform 1200ms ease, opacity 1200ms ease;
-    transition-delay: 300ms;
+    transition-delay: ${props => props.landed ? 'var(--shift-speed)' : '0ms'};
 
-    ${props => props.instantMode && `transition-delay: 0ms;`}
+    /* ${props => props.instantMode && `transition-delay: 0ms;`} */
   }
   & > .secondary-marquee {
     line-height: 90%;
@@ -791,7 +806,7 @@ class App extends React.PureComponent {
   fillFromDB = async (parentContent) => {
     let st = window.performance.now();
 
-    let getType = window.GUEST_MODE ? 'guest' : window.TEST_MODE ? 'test' : '';
+    let getType = window.GUEST_MODE ? 'guest' : (window.TEST_MODE || window.FILL_FIELDS) ? 'test' : '';
     if (window.location.href.indexOf('wagsworthgrooming.com') > -1) {
       getType = 'published';
     }
@@ -817,17 +832,17 @@ class App extends React.PureComponent {
         }
       }
     }
-
     
     // for live updating
-    
-    console.log('we got contetnt', content)
-    if (parentContent || window.STAGING_MODE) {
-      console.log('inside we got contetnt', content)
+
+    console.log('?????? parentContent || window.STAGING_MODE || window.TEST_MODE ????', (parentContent || window.STAGING_MODE || window.TEST_MODE))
+
+    if (parentContent || window.STAGING_MODE || window.TEST_MODE || window.FILL_FIELDS) {
       let backgroundUrl = `url('${content.globalStyles.backgroundImageUrl}')`;
       if (parentContent && content.globalStyles.backgroundImagePreviewUrl !== content.globalStyles.backgroundImageUrl) {
         backgroundUrl = `url('${content.globalStyles.backgroundImagePreviewUrl}')`;
       }
+      console.error('settting basckgoerund!!')
       document.documentElement.style.setProperty('--header-color', content.globalStyles.headerColor);
       document.documentElement.style.setProperty('--background-image', backgroundUrl);
       let stretchBg = content.globalStyles.stretchBackground;
@@ -836,7 +851,6 @@ class App extends React.PureComponent {
         imageEl.src = content.globalStyles.backgroundImageUrl;
         document.body.appendChild(imageEl);
         imageEl.style.margin = 0;
-        let rect = imageEl.getBoundingClientRect();
         let backgroundSizeValue;
         imageEl.style.visibility = 'hidden';
         imageEl.addEventListener('load', () => {
@@ -860,16 +874,21 @@ class App extends React.PureComponent {
               fill = 'width';
             }
           }
-          
+          let actualBgWidth;
+          let actualBgHeight;
           if (fill === 'width') {
-            backgroundSizeValue = content.globalStyles.backgroundImageSize + '%' + ' auto';
+            actualBgWidth = content.globalStyles.backgroundImageSize + '%';
+            actualBgHeight = 'auto'
           } else {          
-            backgroundSizeValue = 'auto ' + content.globalStyles.backgroundImageSize + '%';
+            actualBgWidth = 'auto'
+            actualBgHeight = content.globalStyles.backgroundImageSize + '%';
           }
-          console.warn('bg vlue is?', backgroundSizeValue)
-          content.globalStyles.backgroundImageSize = backgroundSizeValue;
+          content.globalStyles.backgroundImageWidth = actualBgWidth;
+          content.globalStyles.backgroundImageHeight = actualBgHeight;
           document.body.removeChild(imageEl);
-          document.documentElement.style.setProperty('--background-image-size', `${content.globalStyles.backgroundImageSize}`);
+          // document.documentElement.style.setProperty('--background-image-size', `${content.globalStyles.backgroundImageSize}`);
+          document.documentElement.style.setProperty('--background-image-width', actualBgWidth);
+          document.documentElement.style.setProperty('--background-image-height', actualBgHeight);
         });
       } else {
         document.documentElement.style.setProperty('--background-image-size', `100% 100%`);
@@ -971,9 +990,9 @@ class App extends React.PureComponent {
       'https://instagram.com/wagsworths',
       'https://twitter.com/wagsworths',
       'https://pinterest.com/wagsworths'];
-    // if (window.GUEST_MODE || window.FILL_FIELDS) {
-    //   socialUrls = ['','','','']
-    // }
+    if (window.GUEST_MODE || window.FILL_FIELDS) {
+      socialUrls = ['','','','']
+    }
 
     console.log('socialUrls', socialUrls)
     this.setState({
@@ -993,9 +1012,6 @@ class App extends React.PureComponent {
       socialUrls: socialUrls,
       saveStatus: contentObj.data.saveStatus,
     }, () => {
-      if (!parentContent && !this.state.ready) {
-        this.setState({ ready: true });        
-      }
       if (window.FILL_FIELDS) {
         newSections = fillSection(0, [...newSections]);
         newSections = fillSection('titles', [...newSections])
@@ -1008,10 +1024,16 @@ class App extends React.PureComponent {
           // requirements: newReqs.newReqs
         });
       }
+      if (!parentContent && !this.state.ready) {
+        this.setState({ ready: true });
+      }
+      document.body.classList.remove('background-pending')
     });
   }
 
-  componentWillMount = async () => {
+  componentWillMount = async () => {    
+    // window.GUEST_MODE = window.STAGING_MODE = window.EDIT_MODE = false;
+
     await this.fillFromDB();
     touchHandler.setInputs(document.body);
     setTimeout(() => {
@@ -1038,14 +1060,25 @@ class App extends React.PureComponent {
   }
   componentDidMount = async () => {    
     await checkTokenForEditMode();
+
     if (window.EDIT_MODE) {
       window.addEventListener('message', this.receiveMessage, false);
+    } else {
+      if (!window.GUEST_MODE && !window.STAGING_MODE && !window.TEST_MODE && !window.FILL_FIELDS) {
+        console.error('IS LIVE')
+        document.documentElement.style.setProperty('--background-image', `url('./assets/background3.jpg')`);
+        document.documentElement.style.setProperty('--background-image-width', `auto`);
+        document.documentElement.style.setProperty('--background-image-height', `109%`);
+        document.documentElement.style.setProperty('--background-image-size', `auto 109% `);
+        document.documentElement.style.setProperty('--background-opacity', `1`);
+        document.body.classList.remove('background-pending');
+      }
     }
   };
   receiveMessage = (event) => {
     console.warn('got event!', event)
     if (window.EDIT_MODE && event.origin.indexOf(editOrigin) > -1) {
-      console.warn('fill event--------------!', event)
+      console.warn('fill event --------------!', event)
       this.fillFromDB(event);
     }
   }
@@ -1206,7 +1239,10 @@ class App extends React.PureComponent {
               ref={this.state.sections[0].ref}
               landed={this.state.landed && this.state.phase === 0}
             >
-              <IntroMessage landed={this.state.phase === 0 && this.state.lazyLoad2 && this.state.landed} instantMode={this.lastPhase !== 1}>
+              <IntroMessage 
+                landed={this.state.phase === 0 && this.state.lazyLoad2 && this.state.landed} 
+                instantMode={this.state.lastPhase !== 1}
+              >
                 <div className='title-marquee'>{
                   this.state.sections[this.state.phase].headline
                 }</div>
@@ -1226,7 +1262,7 @@ class App extends React.PureComponent {
                 leaving={this.state.inTransit.from === 0}
               >
                 <DownArrow
-                  label={this.state.landed && this.state.sections[1].title} 
+                  label={this.state.landed ? this.state.sections[1].title : ''} 
                   landed={this.state.ready} 
                   {...{ [window.CLICK_METHOD]: () => this.changePhase(1) }}
                 />
@@ -1305,20 +1341,24 @@ class App extends React.PureComponent {
                     </Suspense>
                   )
               )}
-            {(!window.IS_LANDSCAPE && (this.state.phase === totalSections-1 || this.state.menuOn)) &&
-              <Footer socialUrls={this.state.socialUrls} pulsing={true} phase={this.state.phase} />
-            }
           </SectionScrollContainer>
         )}
-        {window.GUEST_MODE || (window.EDIT_MODE || window.STAGING_MODE) && (
+        {(!window.IS_LANDSCAPE && (this.state.phase === totalSections-1 || this.state.menuOn)) &&
+          <Footer socialUrls={this.state.socialUrls} menuOn={this.state.menuOn} pulsing={true} phase={this.state.phase} />
+        }
+        {/* {(window.GUEST_MODE || window.EDIT_MODE || window.STAGING_MODE) &&  */}
           <>
             <EditIndicator style={{ fontFamily: 'sans-serif', color: window.EDIT_MODE ? '#aaffaa' : '#ffffaa' }}>
               {window.EDIT_MODE ? 
               <div>
                 <span style={{color: 'orange'}}>{window.EDIT_MODE.toUpperCase()}</span> LIVE EDITING
-  
               </div>
-              : 'STAGING MODE'}
+              // : !window.TEST_MODE ?
+              // 'STAGING MODE'
+              : <div>
+                {((window.EDIT_MODE ? ' edit mode' : '') + (window.STAGING_MODE ? ' staging mode' : '') + (window.GUEST_MODE ? ' guest mode' : '') + (window.TEST_MODE ? ' test mode' : '') + (window.FILL_FIELDS ? ' fill mode' : ''))}
+              </div>
+          }
             </EditIndicator>
             {this.state.saveStatus === `unsaved` && (
               <EditIndicator id='edit-message' flashing={false}>
@@ -1326,8 +1366,8 @@ class App extends React.PureComponent {
               </EditIndicator>
             )}
           </>
-        )}
-        {window.IS_LANDSCAPE && <Footer socialUrls={this.state.socialUrls} pulsing={true} phase={this.state.phase} />}
+        {/* } */}
+        {window.IS_LANDSCAPE && this.state.socialUrls && <Footer socialUrls={this.state.socialUrls} menuOn={this.state.menuOn} pulsing={true} phase={this.state.phase} />}
         {/* <Suspense fallback={<></>}> */}
           <Menu
             sections={this.state.sections}

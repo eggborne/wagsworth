@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components/macro';
 import { generator } from '../scripts/quotes.js';
 
@@ -7,7 +7,6 @@ const instagramIcon = require(`../assets/icons/instagramicon.png`);
 const twittericon = require(`../assets/icons/twittericon.png`);
 const pinteresticon = require(`../assets/icons/pinteresticon.png`);
 
-
 const FooterContainer = styled.footer`
   position: absolute;
   bottom: 0;
@@ -15,15 +14,17 @@ const FooterContainer = styled.footer`
   align-self: stretch;
   font-family: var(--main-font), sans-serif;
   width: var(--main-width);
+  max-height: var(--footer-height);
   min-height: var(--footer-height);
   color: #ddd;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
-  background-color: ${props => (props.phase > 0 ? '#101010' : 'transparent')};
-  box-shadow: var(--header-shadow);
-  transition: background-color calc(var(--shift-speed) / 2) ease;
+  background-color: ${props => ((props.phase > 0 && !props.menuOn) ? 'var(--header-color)' : 'transparent')};
+  box-shadow: ${props => ((props.phase > 0 && !props.menuOn) ? 'var(--header-color)' : 'transparent')};
+  transform: ${props => props.showing ? 'none' : 'translateY(100%)'};
+  transition: transform var(--shift-speed) ease, background-color calc(var(--shift-speed) / 2) ease;
   /* padding: 0 calc(var(--footer-height) / 4); */
   z-index: 2;
 
@@ -101,15 +102,20 @@ const SocialIcons = styled.div`
 `;
 
 function Footer(props) {
+  const [showing, setShowing] = useState(false);
+  useEffect(() => {
+    setShowing(true);
+    return () => setShowing(false);
+  });
   let attribution = `© ${new Date().getFullYear()} Wagsworth Grooming`;
-  if (window.GUEST_MODE) {
+  if (window.FILL_FIELDS) {
     attribution = `${generator.lines.length} lines in database`
   }
-  console.log('props is', props)
+  console.log('Footer props is', props)
   return (
-    <FooterContainer phase={props.phase}>
+    <FooterContainer showing={showing} phase={props.phase} menuOn={props.menuOn}>
       <span className='follow-label'>FOLLOW US</span>
-      {props.socialUrls && <SocialIcons pulsing={props.pulsing}>
+      {true && <SocialIcons pulsing={showing}>
         <a href={props.socialUrls[0]} target='blank'><img alt='' id='fb' src={facebookIcon} /> </a>
         <a href={props.socialUrls[1]} target='blank'><img alt='' id='insta' src={instagramIcon} /></a>
         <a href={props.socialUrls[2]} target='blank'><img alt='' id='twit' src={twittericon} /></a>
@@ -123,8 +129,8 @@ function Footer(props) {
 }
 
 const areEqual = (prevProps, nextProps) => {
-  let equal = prevProps.phase === nextProps.phase ||
-    (prevProps.phase !== 0 && prevProps.phase !== 4 && nextProps.phase !== 0 && nextProps.phase !== 4)
+  let equal = prevProps.menuOn === nextProps.menuOn && (prevProps.phase === nextProps.phase ||
+    (prevProps.phase !== 0 && prevProps.phase !== 4 && nextProps.phase !== 0 && nextProps.phase !== 4))
     ;
   return equal;
 }

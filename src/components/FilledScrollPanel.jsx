@@ -14,15 +14,18 @@ const borderUrl = require("../assets/borders/pawprintborder.png");
 
 // const googleMapHTML = `<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2801.544366522556!2d-122.7430284839197!3d45.39836124585416!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x549572e65fe21c41%3A0x419967e7f5602b9c!2sThe%20Scooby%20Shack!5e0!3m2!1sen!2sus!4v1573525146909!5m2!1sen!2sus" frameborder="0" style="border:0;" allowfullscreen></iframe>`
 let googleMapUrl = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d178936.0853006728!2d-122.86713118207858!3d45.51256804064862!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x549572e65fe21c41%3A0x419967e7f5602b9c!2sThe%20Scooby%20Shack!5e0!3m2!1sen!2sus!4v1575891664169!5m2!1sen!2sus`;
+// let googleMapUrl = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2802.439953545423!2d-122.76585714857394!3d45.380295278997565!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x549572844a2c2c13%3A0x63ed1a9386f69e73!2s19300%20SW%20Boones%20Ferry%20Rd%2C%20Tualatin%2C%20OR%2097062!5e0!3m2!1sen!2sus!4v1585256962847!5m2!1sen!2sus`;
+
 if (window.FILL_FIELDS) {
   googleMapUrl = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d826.2231081929783!2d-118.401788270736!3d34.072271609666956!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c2bc06fc44af25%3A0xfe38f831b8cb930a!2s9390%20N%20Santa%20Monica%20Blvd%2C%20Beverly%20Hills%2C%20CA%2090210!5e0!3m2!1sen!2sus!4v1577345192150!5m2!1sen!2sus`;
 }
-
 const FilledSectionContainer = styled.section`  
   box-sizing: content-box;
   width: 100%;
   position: relative;
   height: var(--section-height);
+    max-height: calc(var(--view-height) - var(--header-height));
+
   display: grid;  
   grid-template-columns: 1fr;
   grid-template-rows: 
@@ -38,6 +41,7 @@ const FilledSectionContainer = styled.section`
   font-family: var(--main-font);
   pointer-events: none;
   box-shadow: 0 0 2px solid black !important;
+  /* opacity: 0; */
   /* overflow: hidden; */
   
   .scroll-panel-container.leaving * {
@@ -48,7 +52,6 @@ const FilledSectionContainer = styled.section`
   .scroll-panel-container.instant * {
     /* transition-delay: 0ms !important; */
   }
-
   &.leaving * {
     /* transition-duration: 0ms !important; */
     /* opacity: 1 !important; */
@@ -128,8 +131,10 @@ const SectionTitle = styled.header`
   text-align: center;
   /* color: var(--title-text-color); */
   font-family: var(--title-font);
-  font-size: var(--title-font-size);
-  font-size: ${props => (props.long ? 'calc(var(--title-font-size) / 1.25)' : 'var(--title-font-size)')};
+  /* font-size: var(--title-font-size); */
+  /* font-size: ${props => props.long ? 'calc(var(--title-font-size) / 1.25)' : 'var(--title-font-size)'}; */
+  font-size: ${props => parseInt(props.strLength) < 14 ? 'var(--title-font-size)' : `calc(var(--title-font-size) * 0.75)`};
+  padding-top: ${props => parseInt(props.strLength) < 14 ? '0' : 'calc(var(--paper-margin) * 2) !important'};
   /* font-size: var(--title-font-size); */
   align-self: stretch;
   justify-self: stretch;
@@ -142,10 +147,10 @@ const SectionTitle = styled.header`
   padding-top: calc(var(--paper-margin) / 2);
   overflow: visible;
   z-index: 12;
-  ${props => props.long && 
+  /* ${props => props.long && 
     `padding-top: calc(var(--paper-margin)); 
     font-size: calc(var(--title-font-size) / 1.25);`
-  }
+  } */
   transition: transform 800ms ease, opacity 800ms ease;
   transition-delay: calc(var(--shift-speed) / 2);
   height: var(--section-header-height);
@@ -689,7 +694,7 @@ function FilledScrollPanel(props) {
   }
   useEffect(() => {
     if (props.sectionData) {
-      replenishFiller();    
+      // replenishFiller();    
     }
   }, [props.sectionData, arrived]);
   useEffect(() => {
@@ -742,8 +747,8 @@ function FilledScrollPanel(props) {
   // console.log('filled scroll panel', props.index, 'has displaysata', displayData)
   return (
     <FilledSectionContainer scrollable={props.scrollable} arrived={arrived} landed={props.landed} title={sectionDisplayData.title} fadeEdges={fadeEdges} style={props.style} className={containerClass}>
-      <SectionTitle arrived={arrived} landed={props.landed} last={props.lastSection} long={displayData.title.length > 11}>
-        {displayData.title}
+      <SectionTitle strLength={sectionDisplayData.title.length} arrived={arrived} landed={props.landed} last={props.lastSection} long={sectionDisplayData.title.length > 11}>
+        {sectionDisplayData.title}
       </SectionTitle>
       <BodyScrollContainer
         id={`section-${props.index}`}

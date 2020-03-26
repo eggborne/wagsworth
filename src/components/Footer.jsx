@@ -106,7 +106,7 @@ function Footer(props) {
   useEffect(() => {
     setShowing(true);
     return () => setShowing(false);
-  });
+  }, []);
   let attribution = `© ${new Date().getFullYear()} Wagsworth Grooming`;
   if (window.FILL_FIELDS) {
     attribution = `${generator.lines.length} lines in database`

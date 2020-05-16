@@ -3,17 +3,12 @@ import styled from "styled-components/macro";
 import AccordianSet from './AccordianSet.jsx';
 import {DownArrow} from '../App.js';
 
-// import "./ScrollPanel.css";
-
 let swipeToScroll = true;
 let shiftSpeed = 420;
 
-// const borderUrl = require("../assets/borders/fancyborder512.png");
 const borderUrl = require("../assets/borders/pawprintborder.png");
 
-// const googleMapHTML = `<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2801.544366522556!2d-122.7430284839197!3d45.39836124585416!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x549572e65fe21c41%3A0x419967e7f5602b9c!2sThe%20Scooby%20Shack!5e0!3m2!1sen!2sus!4v1573525146909!5m2!1sen!2sus" frameborder="0" style="border:0;" allowfullscreen></iframe>`
-// const googleMapUrl = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d178936.0853006728!2d-122.86713118207858!3d45.51256804064862!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x549572e65fe21c41%3A0x419967e7f5602b9c!2sThe%20Scooby%20Shack!5e0!3m2!1sen!2sus!4v1575891664169!5m2!1sen!2sus`;
-const googleMapUrl = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2802.439953545423!2d-122.76585714857394!3d45.380295278997565!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x549572844a2c2c13%3A0x63ed1a9386f69e73!2s19300%20SW%20Boones%20Ferry%20Rd%2C%20Tualatin%2C%20OR%2097062!5e0!3m2!1sen!2sus!4v1585256962847!5m2!1sen!2sus`;
+const googleMapUrl = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1401.2199296915849!2d-122.76475744165117!3d45.38029717875349!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x549573e564760e1d%3A0x7f030423f7eda2b1!2sWagsworth%20Grooming!5e0!3m2!1sen!2sus!4v1589591271494!5m2!1sen!2sus`;
 
 const SectionContainer = styled.section`  
   box-sizing: content-box;
@@ -27,7 +22,6 @@ const SectionContainer = styled.section`
     1fr 
     auto
   ;
-  /* grid-template-columns: var(--header-height) 1fr var(--header-height); */
   justify-items: center;
   align-items: center;
   font-size: var(--main-font-size);
@@ -35,7 +29,6 @@ const SectionContainer = styled.section`
   font-family: var(--title-font);
   pointer-events: none;
   box-shadow: 0 0 2px solid black !important;
-  /* overflow: hidden; */
   
   .scroll-panel-container.leaving * {
     transition-duration: 0ms !important;

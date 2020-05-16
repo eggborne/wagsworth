@@ -832,12 +832,13 @@ class App extends React.PureComponent {
         }
       }
     }
+
+    let backgroundUrl = `url('${content.globalStyles.backgroundImageUrl}')`;
+    document.documentElement.style.setProperty('--background-image', backgroundUrl);
     
     // for live updating
 
     console.log('?????? parentContent || window.STAGING_MODE || window.TEST_MODE ????', (parentContent || window.STAGING_MODE || window.TEST_MODE))
-    let backgroundUrl = `url('${content.globalStyles.backgroundImageUrl}')`;
-    document.documentElement.style.setProperty('--background-image', backgroundUrl);
 
     if (parentContent || window.STAGING_MODE || window.TEST_MODE || window.FILL_FIELDS) {
       let backgroundUrl = `url('${content.globalStyles.backgroundImageUrl}')`;

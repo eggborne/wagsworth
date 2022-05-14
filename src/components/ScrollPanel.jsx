@@ -454,6 +454,16 @@ const ContactTable = styled.div`
     align-items: flex-start;
     text-align: left;
   }
+  & .hours {
+    /* background: green; */
+    padding: 1rem;
+    display: grid;
+    grid-template-rows: auto;  
+    grid-template-columns: 1fr 1fr;    
+  }
+  & .hours > div {
+
+  }
   & .phone-number {
     font-size: 1.5rem;
   }
@@ -817,6 +827,17 @@ function ScrollPanel(props) {
                         <div key={i}>{line}</div>
                       ))}
                     </address>
+                    <div className='contact-row'>
+                      <div className='contact-label'>Hours:</div>
+                      <div className='hours'> 
+                              {props.contactInfo.hours.map((line, i) => (
+                          <>
+                            <div key={i}>{Object.keys(line)}</div>                           
+                            <div key={i}>{Object.values(line)}</div>   
+                          </>        
+                        ))}
+                      </div>
+                    </div>
                   </>
                 )}
                 <div id='user-map'>

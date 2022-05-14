@@ -953,13 +953,13 @@ class App extends React.PureComponent {
     }
 
     let contactData = newSections.filter(sec => sec.email)[0]
-    let email, phone, phoneString, emailName, emailDomain;
+    let email, phone, phoneString, emailName, emailDomain, hours;
     email = contactData.email;
     phone = contactData.phone;
     emailName = contactData.email.split('@')[0];
-    emailDomain = contactData.email.split('@')[1];
+    emailDomain = contactData.email.split('@')[1];    
     phoneString = `(${phone.substr(0, 3)}) ${phone.substr(3, 3)}-${phone.substr(6, 4)}`;
-    
+    hours = contactData.hours;
     niceNewData.faqs.map((qSet, i) => {
       let newSet = {
         question: this.cleanseString(qSet.question),
@@ -986,6 +986,28 @@ class App extends React.PureComponent {
     let reqSection = newSections.filter(sec => sec.type === 'req')[0];
     newSections[newSections.indexOf(reqSection)].legend = this.cleanseString(reqSection.legend);
 
+    // adding hours May 2022
+    niceNewData.sections[5].hours =
+      [
+      { Sun: 'Closed' },
+      { Mon: '9am - 5pm' },
+      { Tue: '9am - 5pm' },
+      { Wed: '9am - 5pm' },
+      { Thu: '9am - 5pm' },
+      { Fri: '9am - 2pm' },
+      { Sat: 'Closed' },        
+      ];
+    // {
+    //   Sun: 'Closed',
+    //   Mon: 'Closed',
+    //   Tue: 'Closed',
+    //   Wed: 'Closed',
+    //   Thu: 'Closed',
+    //   Fri: 'Closed',
+    //   Sat: 'Closed',
+    // }
+    
+
     console.log('niceNewData after cleaning', niceNewData);
 
     let socialUrls = niceNewData.socialUrls ||
@@ -1010,7 +1032,8 @@ class App extends React.PureComponent {
         phoneString,
         emailName,
         emailDomain,
-        address: contactData.address
+        hours: contactData.hours,
+        address: contactData.address,
       },
       socialUrls: socialUrls,
       saveStatus: contentObj.data.saveStatus,
